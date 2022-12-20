@@ -1,13 +1,13 @@
 from django.contrib import admin
-from django.contrib.auth.forms import UserChangeForm, UserCreationForm
+from django.contrib.auth.admin import UserAdmin
 
 from core.models import User
 
 
 @admin.register(User)
-class UserAdmin(admin.ModelAdmin):
+class CustomUserAdmin(UserAdmin):
     fieldsets = (
-        (None, {"fields": ("username",)}),
+        (None, {"fields": ("username", "password")}),
         (None, {"fields": ("first_name", "last_name", "email")}),
         (
             None,
@@ -20,31 +20,13 @@ class UserAdmin(admin.ModelAdmin):
         ),
         (None, {"fields": ("last_login", "date_joined")}),
     )
-    add_fieldsets = (
-        (
-            None,
-            {
-                "classes": ("wide",),
-                "fields": ("username", "password1", "password2"),
-            },
-        ),
-    )
-    form = UserChangeForm
-    add_form = UserCreationForm
-    # list page fields
+
+    # list page
     list_display = ("username", "email", "first_name", "last_name")
     list_filter = ('is_staff', 'is_active', 'is_superuser')
-    search_fields = ("username", "first_name", "last_name", "email")
-    # user page fields
+    # user page
     readonly_fields = ('last_login', 'date_joined')
     exclude = ['password']
-
-    ordering = ("username",)
-
-    def get_fieldsets(self, request, obj=None):
-        if not obj:
-            return self.add_fieldsets
-        return super().get_fieldsets(request, obj)
 
     def get_form(self, request, obj=None, **kwargs):
         is_superuser = request.user.is_superuser
