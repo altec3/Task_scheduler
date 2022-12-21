@@ -1,8 +1,7 @@
-import os
 from pathlib import Path
-from dotenv import load_dotenv
+from envparse import env
 
-load_dotenv()
+env.read_envfile()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -12,10 +11,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('DJANGO_SK') or 'django-insecure-=d8jd(tfuzv35t*exjkikyt7*5z^%=hr53443mj3(da&q!yibo'
+SECRET_KEY = env.str('DJANGO_SK', default='django-insecure-=d8jd(tfuzv35t*exjkikyt7*5z^%=hr53443mj3(da&q!yibo')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(int(os.getenv('DJANGO_DEBUG', 1)))
+DEBUG = env.bool('DJANGO_DEBUG', default=True)
 
 ALLOWED_HOSTS = [] if DEBUG else ['*']
 
@@ -31,7 +30,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # Local
-    'core',
+    'core.apps.CoreConfig',
 ]
 
 MIDDLEWARE = [
@@ -70,12 +69,12 @@ WSGI_APPLICATION = 'todolist.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.sqlite3'),
-        'NAME': os.getenv('DB_NAME', BASE_DIR / 'db.sqlite3'),
-        'USER': os.getenv('DB_USER'),
-        'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': os.getenv('DB_HOST'),
-        'PORT': os.getenv('DB_PORT'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': env.str('DB_NAME'),
+        'USER': env.str('DB_USER'),
+        'PASSWORD': env.str('DB_PASSWORD'),
+        'HOST': env.str('DB_HOST'),
+        'PORT': '5432',
     }
 }
 
@@ -121,4 +120,4 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTH_USER_MODEL = "core.User"
+AUTH_USER_MODEL = 'core.User'
