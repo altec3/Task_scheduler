@@ -1,0 +1,11 @@
+venv
+logs/
+.gitignore
+__pycache__
+.git
+.github
+.cache
+.env
+**/*.class
+*.md
+deploy
