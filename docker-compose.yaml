@@ -23,10 +23,11 @@ services:
     build:
       context: .
       dockerfile: dockerfile
+    image: altec3/thesis
     environment:
       DB_HOST: db
     volumes:
-      - ./.docker_env:/server/.env
+      - ./.env:/server/.env
     depends_on:
       db:
         condition: service_healthy
@@ -40,7 +41,7 @@ services:
     environment:
       DB_HOST: db
     volumes:
-      - ./.docker_env:/server/.env
+      - ./.env:/server/.env
       - static:/server/static
     ports:
       - "8000:8000"
