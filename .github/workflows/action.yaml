@@ -26,8 +26,6 @@ jobs:
         run: |
           mkdir deploy
           cat ci_cd/docker-compose.yaml | envsubst > deploy/docker-compose.yaml
-          cp ci_cd/nginx.conf deploy/nginx.conf
-          cp ci_cd/.env deploy/.env
       - name: copy files to server
         uses: appleboy/scp-action@master
         with:
