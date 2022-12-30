@@ -5,6 +5,8 @@ ENV PYTHONUNBUFFERED 1
 
 WORKDIR /server
 
+EXPOSE 8000
+
 # Установка зависимостей
 COPY poetry.lock .
 COPY pyproject.toml .
