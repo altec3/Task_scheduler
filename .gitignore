@@ -129,6 +129,5 @@ dmypy.json
 .pyre/
 .DS_Store
 .idea/
-**/django_static/
-**/django_media/
-**/deploy/
+**/static/
+**/media/
