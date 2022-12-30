@@ -19,8 +19,6 @@ services:
 
   migrations:
     image: ${DOCKER_USERNAME}/thesis:$GITHUB_REF_NAME-$GITHUB_RUN_ID
-    environment:
-      DB_HOST: db
     env_file:
       - .env
     depends_on:
@@ -31,8 +29,6 @@ services:
   api:
     image: ${DOCKER_USERNAME}/thesis:$GITHUB_REF_NAME-$GITHUB_RUN_ID
     restart: always
-    environment:
-      DB_HOST: db
     env_file:
       - .env
     depends_on:
@@ -44,8 +40,6 @@ services:
 
   collectstatic:
     image: ${DOCKER_USERNAME}/thesis:$GITHUB_REF_NAME-$GITHUB_RUN_ID
-    environment:
-      DB_HOST: db
     env_file:
       - .env
     volumes:

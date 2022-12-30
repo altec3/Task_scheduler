@@ -27,6 +27,11 @@ jobs:
     steps:
       - name: clone code
         uses: actions/checkout@v2
+      - name: decrypt .env
+        uses: anthonykgross/ansible-vault-cli-github-action@v1
+        with:
+          vault_key: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
+          command: "ansible-vault decrypt deploy/.env"
       - name: render configs
         run: |
           cat deploy/docker-compose_temp.yaml | envsubst > deploy/docker-compose.yaml

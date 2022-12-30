@@ -47,12 +47,6 @@ poetry install
 docker run --name psql -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres
 ```
 
-Сборка статики
-
-```python
-docker-compose exec api python manage.py collectstatic
-```
-
 Создание администратора для админ-панели
 
 ```python
