@@ -36,7 +36,7 @@ services:
         condition: service_healthy
       migrations:
         condition: service_completed_successfully
-    command: gunicorn todolist/todolist.wsgi:application --bind 0.0.0.0:8000
+    command: gunicorn todolist.todolist.wsgi:application --bind 0.0.0.0:8000
 
   collectstatic:
     image: ${DOCKER_USERNAME}/thesis:$GITHUB_REF_NAME-$GITHUB_RUN_ID
