@@ -22,4 +22,4 @@ COPY todolist/manage.py .
 COPY entrypoint.sh .
 
 # Применение миграций
-# ENTRYPOINT ["bash", "entrypoint.sh"]
+ENTRYPOINT ["bash", "entrypoint.sh"]
