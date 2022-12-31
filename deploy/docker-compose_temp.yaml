@@ -24,7 +24,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    command: python3 todolist/manage.py migrate
+    command: python3 manage.py migrate
 
   api:
     image: ${DOCKER_USERNAME}/thesis:$GITHUB_REF_NAME-$GITHUB_RUN_ID
@@ -36,7 +36,7 @@ services:
         condition: service_healthy
       migrations:
         condition: service_completed_successfully
-    command: gunicorn todolist.todolist.wsgi:application --bind 0.0.0.0:8000
+    command: gunicorn todolist.wsgi:application --bind 0.0.0.0:8000
 
   collectstatic:
     image: ${DOCKER_USERNAME}/thesis:$GITHUB_REF_NAME-$GITHUB_RUN_ID
@@ -49,7 +49,7 @@ services:
         condition: service_healthy
       migrations:
         condition: service_completed_successfully
-    command: python3 todolist/manage.py collectstatic -c --no-input
+    command: python3 manage.py collectstatic -c --no-input
 
   front:
     image: sermalenk/skypro-front:lesson-36
