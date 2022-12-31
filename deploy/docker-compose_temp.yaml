@@ -17,14 +17,14 @@ services:
       retries: 5
     restart: always
 
-  migrations:
-    image: ${DOCKER_USERNAME}/thesis:$GITHUB_REF_NAME-$GITHUB_RUN_ID
-    env_file:
-      - .env
-    depends_on:
-      db:
-        condition: service_healthy
-    command: python3 manage.py migrate
+#  migrations:
+#    image: ${DOCKER_USERNAME}/thesis:$GITHUB_REF_NAME-$GITHUB_RUN_ID
+#    env_file:
+#      - .env
+#    depends_on:
+#      db:
+#        condition: service_healthy
+#    command: python3 manage.py migrate
 
   api:
     image: ${DOCKER_USERNAME}/thesis:$GITHUB_REF_NAME-$GITHUB_RUN_ID
