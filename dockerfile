@@ -16,7 +16,10 @@ RUN pip install --no-cache-dir --no-warn-script-location -U pip &&\
     poetry install --no-dev --no-root
 
 # Копирование файлов проекта
-COPY . .
+COPY todolist/todolist todolist
+COPY todolist/core core
+COPY todolist/manage.py .
+COPY entrypoint.sh .
 
 # Применение миграций
 # ENTRYPOINT ["bash", "entrypoint.sh"]

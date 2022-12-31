@@ -2,7 +2,7 @@
 **
 
 # except
-!.todolist/**
-!entrypoint.sh
+!todolist/**
 !poetry.lock
 !pyproject.toml
+!entrypoint.sh
