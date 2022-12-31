@@ -17,15 +17,6 @@ services:
       retries: 5
     restart: always
 
-#  migrations:
-#    image: ${DOCKER_USERNAME}/thesis:$GITHUB_REF_NAME-$GITHUB_RUN_ID
-#    env_file:
-#      - .env
-#    depends_on:
-#      db:
-#        condition: service_healthy
-#    command: python3 manage.py migrate
-
   api:
     image: ${DOCKER_USERNAME}/thesis:$GITHUB_REF_NAME-$GITHUB_RUN_ID
     restart: always
@@ -34,8 +25,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-#      migrations:
-#        condition: service_completed_successfully
     command: gunicorn todolist.wsgi:application -w 4 --bind 0.0.0.0:8000
 
   collectstatic:
@@ -47,8 +36,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-#      migrations:
-#        condition: service_completed_successfully
     command: python3 manage.py collectstatic -c --no-input
 
   front:

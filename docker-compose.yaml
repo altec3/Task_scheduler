@@ -19,20 +19,6 @@ services:
     ports:
     - "5432:5432"
 
-  migrations:
-    build:
-      context: .
-      dockerfile: dockerfile
-    image: altec3/thesis
-    environment:
-      DB_HOST: db
-    volumes:
-      - ./.env:/server/.env
-    depends_on:
-      db:
-        condition: service_healthy
-    command: python manage.py migrate
-
   api:
     build:
       context: .
@@ -47,9 +33,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
-      migrations:
-        condition: service_completed_successfully
-    command: gunicorn todolist.wsgi:application --bind 0.0.0.0:8000
+    command: gunicorn todolist.wsgi:application -w 4 --bind 0.0.0.0:8000
 
   collectstatic:
     build:
@@ -63,8 +47,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-      migrations:
-        condition: service_completed_successfully
     command: python3 manage.py collectstatic -c --no-input
 
   front:
