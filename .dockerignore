@@ -1,11 +1,10 @@
-venv
-logs/
-.gitignore
-__pycache__
-.git
-.github
-.cache
-.env
-**/*.class
-*.md
-deploy
+# ignore all
+**
+
+# except
+!manage.py
+!core
+!todolist/**
+!entrypoint.sh
+!poetry.lock
+!pyproject.toml
