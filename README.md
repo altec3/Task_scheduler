@@ -41,11 +41,12 @@ pip install poetry
 poetry install
 ```
 
-Создание и запуск образа с PostgreSQL
+Запуск с помощью Docker Compose
 
 ```python
-docker run --name psql -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres
+ddocker-compose up --build -d
 ```
+Фронтенд-часть будет доступна по адресу `localhost:80` и будет ваимодействовать с запущенным бэкенд-сервером.  
 
 Создание администратора для админ-панели
 
