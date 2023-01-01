@@ -2,7 +2,7 @@ name: Build and deploy thesis_project
 on:
   push:
     tags:
-      - "v*"
+      - 'v*'
 jobs:
   docker_build_and_push:
     runs-on: ubuntu-latest
