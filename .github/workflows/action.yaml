@@ -48,7 +48,7 @@ jobs:
         with:
           vault_key: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
           command: "ansible-vault decrypt deploy/.env"
-      -
+#      -
 #        name: get tag
 #        id: vars
 #        run: echo "tag=${GITHUB_REF#refs/*/} >> $GITHUB_OUTPUT
