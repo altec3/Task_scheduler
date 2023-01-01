@@ -18,7 +18,7 @@ services:
     restart: always
 
   api:
-    image: ${DOCKER_USERNAME}/thesis:$GITHUB_REF_NAME-$GITHUB_RUN_ID
+    image: ${DOCKER_USERNAME}/thesis:latest
     restart: always
     env_file:
       - .env
@@ -28,7 +28,7 @@ services:
     command: gunicorn todolist.wsgi:application -w 4 --bind 0.0.0.0:8000
 
   collectstatic:
-    image: ${DOCKER_USERNAME}/thesis:$GITHUB_REF_NAME-$GITHUB_RUN_ID
+    image: ${DOCKER_USERNAME}/thesis:latest
     env_file:
       - .env
     volumes:
