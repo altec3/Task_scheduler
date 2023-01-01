@@ -1,7 +1,7 @@
 name: Build and deploy thesis_project
 on:
   push:
-    tag:
+    tags:
       - 'v*'
 jobs:
   docker_build_and_push:
@@ -11,11 +11,11 @@ jobs:
         name: clone code
         uses: actions/checkout@v3
       -
-        name: Docker meta
-          id: meta
-          uses: docker/metadata-action@v4
-          with:
-            images: ${{ secrets.DOCKER_USERNAME }}/thesis
+        name: docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ secrets.DOCKER_USERNAME }}/thesis
 #      - name: docker build
 #        run: docker build -t altec3/thesis:$GITHUB_REF_NAME-$GITHUB_RUN_ID .
       -
