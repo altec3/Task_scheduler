@@ -44,7 +44,7 @@ poetry install
 Запуск с помощью Docker Compose
 
 ```python
-ddocker-compose up --build -d
+docker-compose up --build -d
 ```
 Фронтенд-часть будет доступна по адресу `localhost:80` и будет ваимодействовать с запущенным бэкенд-сервером.  
 
