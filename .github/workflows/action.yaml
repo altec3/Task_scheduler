@@ -1,0 +1,92 @@
+name: Build and deploy thesis_project
+on:
+  push:
+    tags:
+      - 'v*'
+jobs:
+  docker_build_and_push:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: clone code
+        uses: actions/checkout@v3
+      -
+        name: docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ secrets.DOCKER_USERNAME }}/thesis
+      -
+        name: docker login
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+      -
+        name: build and push
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: docker_build_and_push
+    steps:
+      -
+        name: clone code
+        uses: actions/checkout@v2
+      -
+        name: decrypt .env
+        uses: anthonykgross/ansible-vault-cli-github-action@v1
+        with:
+          vault_key: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
+          command: "ansible-vault decrypt deploy/.env"
+#      -
+#        name: get tag
+#        id: vars
+#        run: echo "tag=${GITHUB_REF#refs/*/} >> $GITHUB_OUTPUT
+      -
+        name: update docker-compose.yaml
+        env:
+          DB_USER: ${{  secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+#          DOCKER_TAG: ${{ steps.vars.outputs.tag }}
+        run: |
+          cat deploy/docker-compose_temp.yaml | envsubst > deploy/docker-compose.yaml
+          rm -f deploy/docker-compose_temp.yaml
+      -
+        name: copy files to server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          source: "deploy/*"
+          target: "thesis_project_ci"
+          strip_components: 1
+      -
+        name: deploy app
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          script: |
+            cd thesis_project_ci
+            docker compose pull
+            docker compose up -d
+      -
+        name: clear trash
+        if: always()
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          script: |
+            docker system prune -a -f
