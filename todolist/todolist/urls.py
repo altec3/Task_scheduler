@@ -9,4 +9,7 @@ urlpatterns = [
 ]
 
 if settings.DEBUG:
+    urlpatterns += [
+        path('api-auth/', include('rest_framework.urls'))
+    ]
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
