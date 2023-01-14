@@ -1,10 +1,11 @@
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from rest_framework import status
-from rest_framework.generics import CreateAPIView
-from rest_framework.permissions import AllowAny
+from rest_framework.generics import CreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
-from core.serializers import UserRegistrationSerializer, UserLoginSerializer
+from core.models import User
+from core.serializers import UserRegistrationSerializer, UserLoginSerializer, ProfileSerializer
 
 
 class UserCreateView(CreateAPIView):
@@ -26,3 +27,16 @@ class UserLoginView(CreateAPIView):
 
     def perform_create(self, serializer):
         login(request=self.request, user=serializer.save())
+
+
+class UserRetrieveView(RetrieveUpdateDestroyAPIView):
+    """Retrieve a user"""
+    queryset = User.objects.all()
+    permission_classes = [IsAuthenticated]
+    serializer_class = ProfileSerializer
+
+    def get_object(self):
+        return self.request.user
+
+    def perform_destroy(self, instance):
+        logout(self.request)
