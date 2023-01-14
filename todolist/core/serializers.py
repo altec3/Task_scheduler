@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate
 from rest_framework import serializers
-from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.exceptions import AuthenticationFailed, ValidationError
 
 from core.forms import PasswordField
 from core.models import User
@@ -56,3 +56,22 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ("id", "username", "first_name", "last_name", "email")
+
+
+class UpdatePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(required=True, style={'input_type': 'password'}, write_only=True)
+    new_password = PasswordField(required=True)
+
+    def validate_old_password(self, value: str) -> str:
+        if not self.instance.check_password(value):
+            raise ValidationError('Old password is incorrect')
+
+        return value
+
+    def update(self, instance: User, validated_data: dict) -> User:
+        instance.set_password(validated_data['new_password'])
+        instance.save(update_fields=('password', ))
+        return instance
+
+    def create(self, validated_data):
+        raise NotImplementedError
