@@ -35,6 +35,7 @@ INSTALLED_APPS = [
 
     # Local
     'core.apps.CoreConfig',
+    'goals.apps.GoalsConfig',
 ]
 
 MIDDLEWARE = [
