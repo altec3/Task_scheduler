@@ -1,28 +1,31 @@
-from rest_framework import viewsets, filters, pagination, permissions
+from django.db import transaction
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import viewsets, filters, permissions
 
-from goals.models import Category
+from goals.filters import GoalsFilter
+from goals.models import Category, Goal
 from goals.permissions import IsOwnerOrStaff
-from goals.serializers import CategoryCreateSerializer, CategoryListSerializer
+from goals.serializers import CategoryCreateSerializer, CategoryListSerializer, GoalCreateSerializer, GoalListSerializer
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
-    queryset = Category.objects.all().select_related("author")
-    pagination_class = pagination.LimitOffsetPagination
+    queryset = Category.objects.all().select_related('author')
     filter_backends = [
         filters.OrderingFilter,
         filters.SearchFilter,
     ]
-    ordering_fields = ["title", "created"]
-    ordering = ["title"]
-    search_fields = ["title"]
+    # TODO: Почему не отрабатывает сортировка? - Не работает только при наличии пагинации (?limit=...)
+    ordering_fields = ['title', 'created']
+    ordering = ['title']
+    search_fields = ['title']
 
     _serializers = {
-        "create": CategoryCreateSerializer,
+        'create': CategoryCreateSerializer,
     }
     _default_serializer = CategoryListSerializer
 
     _permissions = {
-        "create": [permissions.IsAuthenticated()],
+        'create': [permissions.IsAuthenticated()],
     }
     _default_permissions = [permissions.IsAuthenticated(), IsOwnerOrStaff()]
 
@@ -34,14 +37,58 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
     # Переопределяем метод для отображения категорий с учетом полей author и is_deleted.
     def get_queryset(self):
-        return Category.objects.filter(author=self.request.user, is_deleted=False)
+        return super().get_queryset().filter(author_id=self.request.user.id, is_deleted=False)
 
     # Переопределяем метод для добавления в serializer поля с автором.
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
     # Переопределяем метод для исключения удаления категории из базы.
-    def perform_destroy(self, instance):
-        instance.is_deleted = True
-        instance.save()
+    def perform_destroy(self, instance: Category) -> Category:
+        with transaction.atomic():
+            instance.is_deleted = True
+            instance.save(update_fields=('is_deleted',))
+            instance.goals.update(status=Goal.Status.archived)
+        return instance
+
+
+class GoalViewSet(viewsets.ModelViewSet):
+    queryset = Goal.objects.all().select_related('author')
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOrStaff]
+    filter_backends = [
+        filters.OrderingFilter,
+        filters.SearchFilter,
+        DjangoFilterBackend,
+    ]
+    filterset_class = GoalsFilter
+    # TODO: Почему не отрабатывает сортировка? - Не работает только при наличии пагинации (?limit=...)
+    ordering_fields = ['priority', 'due_date']
+    ordering = ['priority']
+    search_fields = ['title', 'description']
+
+    _serializers = {
+        'create': GoalCreateSerializer,
+    }
+    _default_serializer = GoalListSerializer
+
+    def get_serializer_class(self):
+        return self._serializers.get(self.action, self._default_serializer)
+
+    # Переопределяем метод для отображения целей с учетом полей author и status.
+    def get_queryset(self):
+        return super().get_queryset().filter(
+            author_id=self.request.user.id,
+            status__lt=Goal.Status.archived,
+            category__is_deleted=False,
+        )
+
+    # Переопределяем метод для добавления в serializer поля с автором.
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+
+    # Переопределяем метод для исключения удаления целей из базы.
+    def perform_destroy(self, instance: Goal) -> Goal:
+        with transaction.atomic():
+            instance.status = Goal.Status.archived
+            instance.save(update_fields=('status',))
         return instance
