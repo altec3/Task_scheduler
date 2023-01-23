@@ -1,4 +1,4 @@
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, hashers
 from rest_framework import serializers
 from rest_framework.exceptions import AuthenticationFailed, ValidationError
 
@@ -22,14 +22,11 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
         return attrs
 
-    def create(self, validated_data):
+    def create(self, validated_data: dict) -> User:
         del validated_data['password_repeat']
-        user = super().create(validated_data)
+        validated_data['password'] = hashers.make_password(validated_data['password'])
 
-        user.set_password(user.password)
-        user.save()
-
-        return user
+        return super().create(validated_data)
 
 
 class UserLoginSerializer(serializers.ModelSerializer):
