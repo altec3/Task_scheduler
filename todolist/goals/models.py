@@ -11,12 +11,48 @@ class BaseModel(models.Model):
         abstract = True
 
 
-class Category(BaseModel):
+class Board(BaseModel):
+
     title = models.CharField(verbose_name='Название', max_length=255)
-    user = models.ForeignKey(User, verbose_name='Автор', related_name='categories', on_delete=models.PROTECT)
     is_deleted = models.BooleanField(verbose_name='Удалена', default=False)
 
     class Meta:
+        verbose_name = 'Доска'
+        verbose_name_plural = 'Доски'
+
+    def __str__(self):
+        return self.title
+
+
+class BoardParticipant(BaseModel):
+
+    class Role(models.IntegerChoices):
+        owner = 1, 'Владелец'
+        writer = 2, 'Редактор'
+        reader = 3, 'Читатель'
+
+    board = models.ForeignKey(Board, verbose_name='Доска', on_delete=models.PROTECT)
+    user = models.ForeignKey(User, verbose_name='Пользователь', on_delete=models.PROTECT)
+    role = models.PositiveSmallIntegerField(verbose_name='Роль', choices=Role.choices, default=Role.owner)
+
+    class Meta:
+        default_related_name = 'participants'
+        unique_together = ('board', 'user')
+        verbose_name = 'Участник'
+        verbose_name_plural = 'Участники'
+
+    def __str__(self):
+        return self.board
+
+
+class Category(BaseModel):
+    title = models.CharField(verbose_name='Название', max_length=255)
+    user = models.ForeignKey(User, verbose_name='Автор', on_delete=models.PROTECT)
+    board = models.ForeignKey(Board, verbose_name='Доска', on_delete=models.PROTECT)
+    is_deleted = models.BooleanField(verbose_name='Удалена', default=False)
+
+    class Meta:
+        default_related_name = 'categories'
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
 
@@ -38,8 +74,8 @@ class Goal(BaseModel):
         high = 3, 'Высокий'
         critical = 4, 'Критический'
 
-    user = models.ForeignKey(User, verbose_name='Автор', related_name='goals', on_delete=models.PROTECT)
-    category = models.ForeignKey(Category, verbose_name='Категория', related_name='goals', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, verbose_name='Автор', on_delete=models.PROTECT)
+    category = models.ForeignKey(Category, verbose_name='Категория', on_delete=models.CASCADE)
     title = models.CharField(verbose_name='Заголовок', max_length=255)
     description = models.TextField(verbose_name='Описание', max_length=1000, null=True)
     status = models.PositiveSmallIntegerField(verbose_name='Статус', choices=Status.choices, default=Status.to_do)
@@ -49,6 +85,7 @@ class Goal(BaseModel):
     due_date = models.DateTimeField(verbose_name='Дедлайн', null=True)
 
     class Meta:
+        default_related_name = 'goals'
         verbose_name = 'Цель'
         verbose_name_plural = 'Цели'
 
@@ -57,11 +94,12 @@ class Goal(BaseModel):
 
 
 class Comment(BaseModel):
-    user = models.ForeignKey(User, verbose_name='Автор', related_name='comments', on_delete=models.PROTECT)
-    goal = models.ForeignKey(Goal, verbose_name='Цель', related_name='comments', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, verbose_name='Автор', on_delete=models.PROTECT)
+    goal = models.ForeignKey(Goal, verbose_name='Цель', on_delete=models.CASCADE)
     text = models.TextField(verbose_name='Комментарий', max_length=1000)
 
     class Meta:
+        default_related_name = 'comments'
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
 
