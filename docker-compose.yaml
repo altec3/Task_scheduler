@@ -54,6 +54,7 @@ services:
     volumes:
       - ./deploy/nginx.conf:/etc/nginx/conf.d/default.conf
       - static:/usr/share/nginx/html/static/
+      # - letsencrypt:/etc/letsencrypt
     ports:
       - "80:80"
     depends_on:
@@ -66,3 +67,5 @@ volumes:
     driver: local
   static:
     driver: local
+#  letsencrypt:
+#    driver: local
