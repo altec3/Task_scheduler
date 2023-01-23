@@ -1,6 +1,6 @@
 from django.urls import path
 
-from goals.views import CategoryViewSet, GoalViewSet, CommentViewSet
+from goals.views import CategoryViewSet, GoalViewSet, CommentViewSet, BoardViewSet
 
 category_create = CategoryViewSet.as_view({'post': 'create'})
 category_list = CategoryViewSet.as_view({'get': 'list'})
@@ -26,6 +26,14 @@ comment_detail = CommentViewSet.as_view({
     'patch': 'partial_update',
     'delete': 'destroy',
 })
+board_create = BoardViewSet.as_view({'post': 'create'})
+board_list = BoardViewSet.as_view({'get': 'list'})
+board_detail = BoardViewSet.as_view({
+    'get': 'retrieve',
+    'put': 'update',
+    'patch': 'partial_update',
+    'delete': 'destroy',
+})
 
 urlpatterns = [
     path('goal_category/create', category_create, name='category-create'),
@@ -37,4 +45,7 @@ urlpatterns = [
     path('goal_comment/create', comment_create, name='comment-create'),
     path('goal_comment/list', comment_list, name='comment-list'),
     path('goal_comment/<int:pk>', comment_detail, name='comment-detail'),
+    path('board/create', board_create, name='board-create'),
+    path('board/list', board_list, name='board-list'),
+    path('board/<int:pk>', board_detail, name='board-detail'),
 ]
