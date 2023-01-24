@@ -18,6 +18,7 @@ django-filter = "^22.1"
 
 [tool.poetry.group.dev.dependencies]
 ansible-vault-win = "^1.0.0"
+django-debug-toolbar = "^3.8.1"
 
 [build-system]
 requires = ["poetry-core"]

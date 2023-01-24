@@ -39,9 +39,6 @@ INSTALLED_APPS = [
     'goals.apps.GoalsConfig',
 ]
 
-if DEBUG:
-    INSTALLED_APPS += []
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -51,6 +48,17 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+if DEBUG:
+    INSTALLED_APPS += [
+        'debug_toolbar',
+    ]
+    MIDDLEWARE += [
+        'debug_toolbar.middleware.DebugToolbarMiddleware',
+    ]
+    INTERNAL_IPS = [
+        '127.0.0.1',
+    ]
 
 ROOT_URLCONF = 'todolist.urls'
 
