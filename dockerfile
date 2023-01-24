@@ -13,7 +13,7 @@ COPY pyproject.toml .
 RUN pip install --no-cache-dir --no-warn-script-location -U pip &&\
     pip install --no-cache-dir --no-warn-script-location poetry &&\
     poetry config virtualenvs.create false &&\
-    poetry install --no-dev --no-root
+    poetry install --without dev --no-root
 
 # Копирование файлов проекта
 COPY todolist/todolist todolist
