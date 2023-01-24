@@ -54,7 +54,7 @@ class BoardViewSet(viewsets.ModelViewSet):
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
-    queryset = Category.objects.all().select_related('board')
+    queryset = Category.objects.all().select_related('user', 'board')
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrWriter]
 
     filter_backends = [filters.OrderingFilter, filters.SearchFilter, DjangoFilterBackend]
@@ -92,7 +92,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
 
 class GoalViewSet(viewsets.ModelViewSet):
-    queryset = Goal.objects.all().select_related('category')
+    queryset = Goal.objects.all().select_related('user', 'category')
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrWriter]
 
     filter_backends = [filters.OrderingFilter, filters.SearchFilter, DjangoFilterBackend]
