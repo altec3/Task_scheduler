@@ -19,7 +19,7 @@ DEBUG = env.bool('DJANGO_DEBUG', default=True)
 
 ALLOWED_HOSTS = [] if DEBUG else ['*']
 
-CSRF_TRUSTED_ORIGINS = ['https://lesnikov-a.ga']
+# CSRF_TRUSTED_ORIGINS = ['https://lesnikov-a.ga']
 
 
 # Application definition
@@ -52,17 +52,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
-if DEBUG:
-    INSTALLED_APPS += [
-        'debug_toolbar',
-    ]
-    MIDDLEWARE += [
-        'debug_toolbar.middleware.DebugToolbarMiddleware',
-    ]
-    INTERNAL_IPS = [
-        '127.0.0.1',
-    ]
 
 ROOT_URLCONF = 'todolist.urls'
 
@@ -167,5 +156,18 @@ REST_FRAMEWORK = {
 # CORS
 CORS_ALLOWED_ORIGINS = [
     'https://lesnikov-a.ga',
-    'http://localhost',
 ]
+
+if DEBUG:
+    INSTALLED_APPS += [
+        'debug_toolbar',
+    ]
+    MIDDLEWARE += [
+        'debug_toolbar.middleware.DebugToolbarMiddleware',
+    ]
+    INTERNAL_IPS = [
+        '127.0.0.1',
+    ]
+    CORS_ALLOWED_ORIGINS += [
+        'http://localhost',
+    ]
