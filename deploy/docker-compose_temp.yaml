@@ -40,7 +40,7 @@ services:
 
   front:
     # image: sermalenk/skypro-front:lesson-37
-    image: altec3/thesis-front
+    image: altec3/thesis-front:latest
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
       - static:/usr/share/nginx/html/static/
