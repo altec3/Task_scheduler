@@ -39,12 +39,15 @@ services:
     command: python3 manage.py collectstatic -c --no-input
 
   front:
-    image: sermalenk/skypro-front:lesson-37
+    # image: sermalenk/skypro-front:lesson-37
+    image: altec3/thesis-front
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
       - static:/usr/share/nginx/html/static/
+      - letsencrypt:/etc/letsencrypt
     ports:
       - "80:80"
+      - "443:443"
     depends_on:
       - db
       - api
@@ -54,4 +57,6 @@ volumes:
   psql_data:
     driver: local
   static:
+    driver: local
+  letsencrypt:
     driver: local
