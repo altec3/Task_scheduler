@@ -1,6 +1,5 @@
 from django.db import transaction
 from rest_framework import serializers
-from rest_framework.generics import get_object_or_404
 
 from core.models import User
 from core.serializers import ProfileSerializer
