@@ -1,105 +1,10 @@
 from django.db import transaction
 from rest_framework import serializers
+from rest_framework.generics import get_object_or_404
 
 from core.models import User
 from core.serializers import ProfileSerializer
 from goals.models import Category, Goal, Comment, Board, BoardParticipant
-
-
-class CategoryCreateSerializer(serializers.ModelSerializer):
-    user = serializers.HiddenField(default='user')
-
-    def validate_board(self, value: Board) -> Board:
-        # Проверка статуса доски 'Удалена'
-        if value.is_deleted:
-            raise serializers.ValidationError('Not allowed in deleted category')
-        # Проверка роли пользователя
-        if not value.participants.filter(
-            user=self.context['request'].user,
-            board=value,
-            role__in=(BoardParticipant.Role.owner, BoardParticipant.Role.writer,)
-        ).exists():
-            raise serializers.ValidationError('Not owner or writer of category')
-
-        return value
-
-    class Meta:
-        model = Category
-        fields = '__all__'
-        read_only_fields = ('id', 'created', 'updated', 'user', 'is_deleted',)
-
-
-class CategoryListSerializer(serializers.ModelSerializer):
-    user = ProfileSerializer(read_only=True)
-
-    class Meta:
-        model = Category
-        fields = '__all__'
-        read_only_fields = ('id', 'created', 'updated', 'user', 'board',)
-
-
-class GoalCreateSerializer(serializers.ModelSerializer):
-    user = serializers.HiddenField(default='user')
-
-    def validate_category(self, value: Category) -> Category:
-        # Проверка статуса категории 'Удалена'
-        if value.is_deleted:
-            raise serializers.ValidationError('Not allowed in deleted category')
-        # Проверка роли пользователя
-        if not value.board.participants.filter(
-                user=self.context['request'].user,
-                board=value.board,
-                role__in=(BoardParticipant.Role.owner, BoardParticipant.Role.writer,)
-        ).exists():
-            raise serializers.ValidationError('Not owner or writer of category')
-
-        return value
-
-    class Meta:
-        model = Goal
-        fields = '__all__'
-        read_only_fields = ('id', 'created', 'updated', 'user',)
-
-
-class GoalListSerializer(serializers.ModelSerializer):
-    user = ProfileSerializer(read_only=True)
-
-    class Meta:
-        model = Goal
-        fields = '__all__'
-        read_only_fields = ('id', 'created', 'updated', 'user',)
-
-
-class CommentCreateSerializer(serializers.ModelSerializer):
-    user = serializers.HiddenField(default='user')
-
-    def validate_goal(self, value: Goal) -> Goal:
-        # Проверка статуса цели 'Архив'
-        if value.status == Goal.Status.archived:
-            raise serializers.ValidationError('not allowed in archived goal')
-        # Проверка роли пользователя
-        if not value.category.board.participants.filter(
-                user=self.context['request'].user,
-                board=value.category.board,
-                role__in=(BoardParticipant.Role.owner, BoardParticipant.Role.writer,)
-        ).exists():
-            raise serializers.ValidationError('Not owner or writer of goal')
-
-        return value
-
-    class Meta:
-        model = Comment
-        fields = '__all__'
-        read_only_fields = ('id', 'created', 'updated',)
-
-
-class CommentListSerializer(serializers.ModelSerializer):
-    user = ProfileSerializer(read_only=True)
-
-    class Meta:
-        model = Comment
-        fields = '__all__'
-        read_only_fields = ('id', 'created', 'updated', 'user', 'goal',)
 
 
 class BoardCreateSerializer(serializers.ModelSerializer):
@@ -165,3 +70,96 @@ class BoardListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Board
         fields = '__all__'
+
+
+class CategoryCreateSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(default='user')
+
+    def validate_board(self, value: Board) -> Board:
+        # Проверка статуса доски 'Удалена'
+        if value.is_deleted:
+            raise serializers.ValidationError('Not allowed in deleted category')
+        # Проверка роли пользователя
+        if not value.participants.filter(
+            user_id=self.context['request'].user.id,
+            role__in=(BoardParticipant.Role.owner, BoardParticipant.Role.writer,)
+        ).exists():
+            raise serializers.ValidationError('Not owner or writer of category')
+
+        return value
+
+    class Meta:
+        model = Category
+        fields = '__all__'
+        read_only_fields = ('id', 'created', 'updated', 'user', 'is_deleted',)
+
+
+class CategoryListSerializer(serializers.ModelSerializer):
+    user = ProfileSerializer(read_only=True)
+
+    class Meta:
+        model = Category
+        fields = '__all__'
+        read_only_fields = ('id', 'created', 'updated', 'user', 'board',)
+
+
+class GoalCreateSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(default='user')
+
+    def validate_category(self, value: Category) -> Category:
+        # Проверка статуса категории 'Удалена'
+        if value.is_deleted:
+            raise serializers.ValidationError('Not allowed in deleted category')
+        # Проверка роли пользователя
+        if not value.board.participants.filter(
+                user_id=self.context['request'].user.id,
+                role__in=(BoardParticipant.Role.owner, BoardParticipant.Role.writer,)
+        ).exists():
+            raise serializers.ValidationError('Not owner or writer of category')
+
+        return value
+
+    class Meta:
+        model = Goal
+        fields = '__all__'
+        read_only_fields = ('id', 'created', 'updated', 'user',)
+
+
+class GoalListSerializer(serializers.ModelSerializer):
+    user = ProfileSerializer(read_only=True)
+
+    class Meta:
+        model = Goal
+        fields = '__all__'
+        read_only_fields = ('id', 'created', 'updated', 'user',)
+
+
+class CommentCreateSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(default='user')
+
+    def validate_goal(self, value: Goal) -> Goal:
+        # Проверка статуса цели 'Архив'
+        if value.status == Goal.Status.archived:
+            raise serializers.ValidationError('not allowed in archived goal')
+        # Проверка роли пользователя
+        if not value.category.board.participants.filter(
+                user_id=self.context['request'].user.id,
+                role__in=(BoardParticipant.Role.owner, BoardParticipant.Role.writer,)
+        ).exists():
+            raise serializers.ValidationError('Not owner or writer of goal')
+
+        return value
+
+    class Meta:
+        model = Comment
+        fields = '__all__'
+        read_only_fields = ('id', 'created', 'updated',)
+
+
+class CommentListSerializer(serializers.ModelSerializer):
+    user = ProfileSerializer(read_only=True)
+
+    class Meta:
+        model = Comment
+        fields = '__all__'
+        read_only_fields = ('id', 'created', 'updated', 'user', 'goal',)

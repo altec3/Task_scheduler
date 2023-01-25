@@ -11,10 +11,10 @@ class BoardPermissions(BasePermission):
             return False
         if request.method in SAFE_METHODS:
             return BoardParticipant.objects.filter(
-                user=request.user, board=obj
+                user_id=request.user.id, board=obj
             ).exists()
         return BoardParticipant.objects.filter(
-            user=request.user, board=obj, role=BoardParticipant.Role.owner
+            user_id=request.user.id, board=obj, role=BoardParticipant.Role.owner
         ).exists()
 
 
@@ -36,13 +36,9 @@ class IsOwnerOrWriter(BasePermission):
             return False
 
         if request.method in SAFE_METHODS:
-            return BoardParticipant.objects.filter(
-                user=request.user,
-                board=self.board
-            ).exists()
+            return self.board.participants.filter(user_id=request.user.id,).exists()
 
-        return BoardParticipant.objects.filter(
-            user=request.user,
-            board=self.board,
+        return self.board.participants.filter(
+            user_id=request.user.id,
             role__in=(BoardParticipant.Role.owner, BoardParticipant.Role.writer,)
         ).exists()

@@ -55,7 +55,6 @@ class BoardViewSet(viewsets.ModelViewSet):
 
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all().select_related('user', 'board')
-    permission_classes = [permissions.IsAuthenticated, IsOwnerOrWriter]
 
     filter_backends = [filters.OrderingFilter, filters.SearchFilter, DjangoFilterBackend]
     filterset_fields = ['board']
@@ -63,13 +62,17 @@ class CategoryViewSet(viewsets.ModelViewSet):
     ordering = ['title']
     search_fields = ['title']
 
-    _serializers = {
-        'create': CategoryCreateSerializer,
-    }
+    _serializers = {'create': CategoryCreateSerializer}
     _default_serializer = CategoryListSerializer
+
+    _permissions = {'create': [permissions.IsAuthenticated()]}
+    _default_permissions = [permissions.IsAuthenticated(), IsOwnerOrWriter()]
 
     def get_serializer_class(self):
         return self._serializers.get(self.action, self._default_serializer)
+
+    def get_permissions(self):
+        return self._permissions.get(self.action, self._default_permissions)
 
     # Переопределяем метод для отображения категорий с учетом полей user и is_deleted.
     def get_queryset(self):
@@ -93,7 +96,6 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
 class GoalViewSet(viewsets.ModelViewSet):
     queryset = Goal.objects.all().select_related('user', 'category')
-    permission_classes = [permissions.IsAuthenticated, IsOwnerOrWriter]
 
     filter_backends = [filters.OrderingFilter, filters.SearchFilter, DjangoFilterBackend]
     filterset_class = GoalsFilter
@@ -101,13 +103,17 @@ class GoalViewSet(viewsets.ModelViewSet):
     ordering = ['priority']
     search_fields = ['title', 'description']
 
-    _serializers = {
-        'create': GoalCreateSerializer,
-    }
+    _serializers = {'create': GoalCreateSerializer}
     _default_serializer = GoalListSerializer
+
+    _permissions = {'create': [permissions.IsAuthenticated()]}
+    _default_permissions = [permissions.IsAuthenticated(), IsOwnerOrWriter()]
 
     def get_serializer_class(self):
         return self._serializers.get(self.action, self._default_serializer)
+
+    def get_permissions(self):
+        return self._permissions.get(self.action, self._default_permissions)
 
     # Переопределяем метод для отображения целей с учетом полей user и status.
     def get_queryset(self):
@@ -131,20 +137,23 @@ class GoalViewSet(viewsets.ModelViewSet):
 
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all().select_related('goal')
-    permission_classes = [permissions.IsAuthenticated, IsOwnerOrWriter]
 
     filter_backends = [filters.OrderingFilter, DjangoFilterBackend]
     filterset_fields = ['goal']
     ordering_fields = ['created']
     ordering = ['-created']
 
-    _serializers = {
-        'create': CommentCreateSerializer,
-    }
+    _serializers = {'create': CommentCreateSerializer}
     _default_serializer = CommentListSerializer
+
+    _permissions = {'create': [permissions.IsAuthenticated()]}
+    _default_permissions = [permissions.IsAuthenticated(), IsOwnerOrWriter()]
 
     def get_serializer_class(self):
         return self._serializers.get(self.action, self._default_serializer)
+
+    def get_permissions(self):
+        return self._permissions.get(self.action, self._default_permissions)
 
     # Переопределяем метод для отображения комментариев с учетом полей author и goal.
     def get_queryset(self):
