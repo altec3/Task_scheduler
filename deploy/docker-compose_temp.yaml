@@ -39,7 +39,6 @@ services:
     command: python3 manage.py collectstatic -c --no-input
 
   front:
-    # image: sermalenk/skypro-front:lesson-37
     image: altec3/thesis-front:latest
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf

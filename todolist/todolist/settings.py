@@ -19,6 +19,8 @@ DEBUG = env.bool('DJANGO_DEBUG', default=True)
 
 ALLOWED_HOSTS = [] if DEBUG else ['*']
 
+CSRF_TRUSTED_ORIGINS = ['https://lesnikov-a.ga']
+
 
 # Application definition
 
@@ -163,4 +165,7 @@ REST_FRAMEWORK = {
 }
 
 # CORS
-CSRF_TRUSTED_ORIGINS = ['https://lesnikov-a.ga']
+CORS_ALLOWED_ORIGINS = [
+    'https://lesnikov-a.ga',
+    'http://localhost',
+]
