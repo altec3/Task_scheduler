@@ -11,16 +11,24 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env.str('DJANGO_SK', default='django-insecure-=d8jd(tfuzv35t*exjkikyt7*5z^%=hr53443mj3(da&q!yibo')
-
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool('DJANGO_DEBUG', default=True)
 
-ALLOWED_HOSTS = [] if DEBUG else ['*']
+ALLOWED_HOSTS = [] if DEBUG else ['lesnikov-a.ga', '127.0.0.1']
 
-# CSRF_TRUSTED_ORIGINS = ['https://lesnikov-a.ga']
+# CSRF
+CSRF_TRUSTED_ORIGINS = [
+    'https://lesnikov-a.ga',
+]
+CSRF_COOKIE_SECURE = True
+SECRET_KEY = env.str('DJANGO_SK', default='django-insecure-=d8jd(tfuzv35t*exjkikyt7*5z^%=hr53443mj3(da&q!yibo')
 
+# CORS
+CORS_ALLOWED_ORIGINS = [
+    'https://lesnikov-a.ga',
+    'http://localhost',
+]
+
+SESSION_COOKIE_SECURE = True
 
 # Application definition
 
@@ -153,11 +161,6 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
 }
 
-# CORS
-CORS_ALLOWED_ORIGINS = [
-    'https://lesnikov-a.ga',
-]
-
 if DEBUG:
     INSTALLED_APPS += [
         'debug_toolbar',
@@ -167,7 +170,4 @@ if DEBUG:
     ]
     INTERNAL_IPS = [
         '127.0.0.1',
-    ]
-    CORS_ALLOWED_ORIGINS += [
-        'http://localhost',
     ]
