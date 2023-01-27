@@ -1,30 +1,26 @@
-from rest_framework.permissions import BasePermission, SAFE_METHODS
+from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 
 from goals.models import BoardParticipant, Category, Board, Goal, Comment
 
 
-class BoardPermissions(BasePermission):
+class BoardPermissions(IsAuthenticated):
     message = 'Delete or edit boards can owners only.'
 
     def has_object_permission(self, request, view, obj: Board):
-        if not request.user.is_authenticated:
-            return False
-        if request.method in SAFE_METHODS:
-            return BoardParticipant.objects.filter(
-                user_id=request.user.id, board=obj
-            ).exists()
-        return BoardParticipant.objects.filter(
-            user_id=request.user.id, board=obj, role=BoardParticipant.Role.owner
-        ).exists()
+        _filters: dict = {'user_id': request.user.id}
+
+        if request.method not in SAFE_METHODS:
+            _filters['role'] = BoardParticipant.Role.owner
+
+        return obj.participants.filter(**_filters).exists()
 
 
-class IsOwnerOrWriter(BasePermission):
+class IsOwnerOrWriter(IsAuthenticated):
     message = 'Delete or edit object can owners or writers only.'
     board = None
 
     def has_object_permission(self, request, view, obj):
-        if not request.user.is_authenticated:
-            return False
+        _filters: dict = {'user_id': request.user.id}
 
         if isinstance(obj, Category):
             self.board = obj.board
@@ -35,10 +31,17 @@ class IsOwnerOrWriter(BasePermission):
         else:
             return False
 
-        if request.method in SAFE_METHODS:
-            return self.board.participants.filter(user_id=request.user.id,).exists()
+        if request.method not in SAFE_METHODS:
+            _filters['role__in'] = (BoardParticipant.Role.owner, BoardParticipant.Role.writer,)
 
-        return self.board.participants.filter(
-            user_id=request.user.id,
-            role__in=(BoardParticipant.Role.owner, BoardParticipant.Role.writer,)
-        ).exists()
+        return self.board.participants.filter(**_filters).exists()
+
+
+class IsCommentOwner(IsAuthenticated):
+    message = 'Delete or edit comments can owners only.'
+
+    def has_object_permission(self, request, view, obj: Comment):
+        return any((
+            request.method in SAFE_METHODS,
+            obj.user.id == request.user.id
+        ))

@@ -22,7 +22,7 @@ class BoardCreateSerializer(serializers.ModelSerializer):
 
 
 class BoardParticipantSerializer(serializers.ModelSerializer):
-    role = serializers.ChoiceField(required=True, choices=BoardParticipant.Role.choices)
+    role = serializers.ChoiceField(required=True, choices=BoardParticipant.Role.choices[1:])
     user = serializers.SlugRelatedField(slug_field='username', queryset=User.objects.all())
 
     class Meta:
@@ -50,15 +50,17 @@ class BoardUpdateSerializer(serializers.ModelSerializer):
                 if old_participant.user_id not in new_by_id:
                     old_participant.delete()
                 else:
-                    if old_participant.role != new_by_id[old_participant.user_id]["role"]:
-                        old_participant.role = new_by_id[old_participant.user_id]["role"]
+                    if old_participant.role != new_by_id[old_participant.user_id]['role']:
+                        old_participant.role = new_by_id[old_participant.user_id]['role']
                         old_participant.save()
                     new_by_id.pop(old_participant.user_id)
             for new_part in new_by_id.values():
                 BoardParticipant.objects.create(
-                    board=instance, user=new_part["user"], role=new_part["role"]
+                    user=new_part['user'], board=instance, role=new_part['role']
                 )
-            instance.title = validated_data["title"]
+            if title := validated_data.get('title'):
+                instance.title = title
+
             instance.save()
 
         return instance
@@ -139,7 +141,7 @@ class CommentCreateSerializer(serializers.ModelSerializer):
     def validate_goal(self, value: Goal) -> Goal:
         # Проверка статуса цели 'Архив'
         if value.status == Goal.Status.archived:
-            raise serializers.ValidationError('not allowed in archived goal')
+            raise serializers.ValidationError('Not allowed in archived goal')
         # Проверка роли пользователя
         if not value.category.board.participants.filter(
                 user_id=self.context['request'].user.id,

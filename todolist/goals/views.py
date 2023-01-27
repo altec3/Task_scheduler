@@ -4,7 +4,7 @@ from rest_framework import viewsets, filters, permissions
 
 from goals.filters import GoalsFilter
 from goals.models import Category, Goal, Comment, Board
-from goals.permissions import BoardPermissions, IsOwnerOrWriter
+from goals.permissions import BoardPermissions, IsOwnerOrWriter, IsCommentOwner
 from goals.serializers import (
     CategoryCreateSerializer, CategoryListSerializer, GoalCreateSerializer, GoalListSerializer,
     CommentCreateSerializer, CommentListSerializer, BoardCreateSerializer, BoardUpdateSerializer, BoardListSerializer
@@ -12,8 +12,8 @@ from goals.serializers import (
 
 
 class BoardViewSet(viewsets.ModelViewSet):
-    queryset = Board.objects.all()
-    permission_classes = [permissions.IsAuthenticated, BoardPermissions]
+    queryset = Board.objects.all().prefetch_related('participants__user')
+    permission_classes = [BoardPermissions]
 
     filter_backends = [filters.OrderingFilter]
     ordering_fields = ['title', 'created']
@@ -66,7 +66,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
     _default_serializer = CategoryListSerializer
 
     _permissions = {'create': [permissions.IsAuthenticated()]}
-    _default_permissions = [permissions.IsAuthenticated(), IsOwnerOrWriter()]
+    _default_permissions = [IsOwnerOrWriter()]
 
     def get_serializer_class(self):
         return self._serializers.get(self.action, self._default_serializer)
@@ -107,7 +107,7 @@ class GoalViewSet(viewsets.ModelViewSet):
     _default_serializer = GoalListSerializer
 
     _permissions = {'create': [permissions.IsAuthenticated()]}
-    _default_permissions = [permissions.IsAuthenticated(), IsOwnerOrWriter()]
+    _default_permissions = [IsOwnerOrWriter()]
 
     def get_serializer_class(self):
         return self._serializers.get(self.action, self._default_serializer)
@@ -147,7 +147,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     _default_serializer = CommentListSerializer
 
     _permissions = {'create': [permissions.IsAuthenticated()]}
-    _default_permissions = [permissions.IsAuthenticated(), IsOwnerOrWriter()]
+    _default_permissions = [IsCommentOwner()]
 
     def get_serializer_class(self):
         return self._serializers.get(self.action, self._default_serializer)
