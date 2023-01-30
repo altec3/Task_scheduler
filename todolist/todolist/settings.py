@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     # Local
     'core.apps.CoreConfig',
     'goals.apps.GoalsConfig',
+    'bot.apps.BotConfig',
 ]
 
 MIDDLEWARE = [
