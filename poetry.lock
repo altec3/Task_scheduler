@@ -265,22 +265,6 @@ ssh = ["bcrypt (>=3.1.5)"]
 test = ["hypothesis (>=1.11.4,!=3.79.2)", "iso8601", "pretend", "pytest (>=6.2.0)", "pytest-benchmark", "pytest-cov", "pytest-subtests", "pytest-xdist", "pytz"]
 
 [[package]]
-name = "dataclass-wizard"
-version = "0.22.2"
-description = "Marshal dataclasses to/from JSON. Use field properties with initial values. Construct a dataclass schema with JSON input."
-category = "main"
-optional = false
-python-versions = "*"
-files = [
-    {file = "dataclass-wizard-0.22.2.tar.gz", hash = "sha256:211f842e5e9a8ace50ba891ef428cd78c82579fb98024f80f3e630ca8d1946f6"},
-    {file = "dataclass_wizard-0.22.2-py2.py3-none-any.whl", hash = "sha256:49be36ecc64bc5a1e9a35a6bad1d71d33b6b9b06877404931a17c6a3a6dfbb10"},
-]
-
-[package.extras]
-timedelta = ["pytimeparse (>=1.1.7)"]
-yaml = ["PyYAML (>=5.3)"]
-
-[[package]]
 name = "defusedxml"
 version = "0.7.1"
 description = "XML bomb protection for Python stdlib modules"
@@ -848,4 +832,4 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "f1a11395c4e8939d7ec205bc2b6c37c6ba9d9fb132fc35afa98e0d98c00382b9"
+content-hash = "6e67e584219a591484b30ada7420997af81990ca076448f1a8e6655ec0ce6fb1"
