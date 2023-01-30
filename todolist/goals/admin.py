@@ -1,11 +1,17 @@
 from django.contrib import admin
 
-from goals.models import Category, Goal, Comment
+from goals.models import Category, Goal, Comment, Board
+
+
+@admin.register(Board)
+class GoalAdmin(admin.ModelAdmin):
+    list_display = ('title', 'created', 'updated',)
+    search_fields = ('title',)
 
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('title', 'user', 'created', 'updated',)
+    list_display = ('title', 'board', 'user', 'created', 'updated',)
     search_fields = ('title', 'user__username',)
 
 

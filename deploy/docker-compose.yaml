@@ -18,7 +18,7 @@ services:
     restart: always
 
   api:
-    image: ${DOCKER_USERNAME}/thesis:latest
+    image: altec3/thesis:latest
     restart: always
     env_file:
       - .env
@@ -28,7 +28,7 @@ services:
     command: gunicorn todolist.wsgi:application -w 4 --bind 0.0.0.0:8000
 
   collectstatic:
-    image: ${DOCKER_USERNAME}/thesis:latest
+    image: altec3/thesis:latest
     env_file:
       - .env
     volumes:
@@ -39,12 +39,16 @@ services:
     command: python3 manage.py collectstatic -c --no-input
 
   front:
-    image: sermalenk/skypro-front:lesson-36
+    image: altec3/thesis-front:https-latest
     volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
       - static:/usr/share/nginx/html/static/
+      - letsencrypt:/etc/letsencrypt
     ports:
       - "80:80"
+      - "443:443"
+    environment:
+      - SERVER_NAME=lesnikov-a.ga
+      - CERTBOT_EMAIL=admin@mail.ru
     depends_on:
       - db
       - api
@@ -54,4 +58,6 @@ volumes:
   psql_data:
     driver: local
   static:
+    driver: local
+  letsencrypt:
     driver: local
