@@ -15,6 +15,7 @@ djangorestframework-simplejwt = "^5.2.2"
 social-auth-app-django = "^5.0.0"
 django-filter = "^22.1"
 django-cors-headers = "^3.13.0"
+marshmallow = "^3.19.0"
 
 
 [tool.poetry.group.dev.dependencies]
