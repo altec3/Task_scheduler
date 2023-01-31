@@ -4,7 +4,7 @@ from goals.models import Category, Goal, Comment, Board
 
 
 @admin.register(Board)
-class GoalAdmin(admin.ModelAdmin):
+class BoardAdmin(admin.ModelAdmin):
     list_display = ('title', 'created', 'updated',)
     search_fields = ('title',)
 
@@ -22,6 +22,6 @@ class GoalAdmin(admin.ModelAdmin):
 
 
 @admin.register(Comment)
-class GoalAdmin(admin.ModelAdmin):
+class CommentAdmin(admin.ModelAdmin):
     list_display = ('text', 'user', 'goal', 'created',)
     search_fields = ('text', 'user__username',)
