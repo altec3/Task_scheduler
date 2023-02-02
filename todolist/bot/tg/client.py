@@ -1,4 +1,5 @@
 import requests
+from requests import exceptions
 
 from bot.tg.dc import GetUpdatesResponse, SendMessageResponse, SendMessageResponseSchema, GetUpdatesResponseSchema
 
@@ -17,7 +18,10 @@ class TgClient:
             params={'offset': offset, 'timeout': timeout}
         )
 
-        return GetUpdatesResponseSchema.load(response.json())
+        try:
+            return GetUpdatesResponseSchema.load(response.json())
+        except exceptions.RequestException:
+            raise NotImplementedError
 
     def send_message(self, chat_id: int, text: str) -> SendMessageResponse:
         url = self.get_url(method='sendMessage')
@@ -26,4 +30,7 @@ class TgClient:
             params={'chat_id': chat_id, 'text': text}
         )
 
-        return SendMessageResponseSchema.load(response.json())
+        try:
+            return SendMessageResponseSchema.load(response.json())
+        except exceptions.RequestException:
+            raise NotImplementedError
