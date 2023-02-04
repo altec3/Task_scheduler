@@ -20,4 +20,4 @@ class TgUser(models.Model):
         verbose_name_plural = 'Telegram пользователи'
 
     def __str__(self):
-        return self.user.username
+        return str(self.tg_id)
