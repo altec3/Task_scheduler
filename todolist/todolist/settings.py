@@ -172,3 +172,5 @@ if DEBUG:
     INTERNAL_IPS = [
         '127.0.0.1',
     ]
+
+TG_TOKEN = env.str('TG_TOKEN')
