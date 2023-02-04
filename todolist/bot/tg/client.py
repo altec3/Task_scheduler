@@ -13,24 +13,24 @@ class TgClient:
 
     def get_updates(self, offset: int = 0, timeout: int = 60) -> GetUpdatesResponse:
         url = self.get_url(method='getUpdates')
-        response = requests.get(
-            url=url,
-            params={'offset': offset, 'timeout': timeout}
-        )
-
         try:
-            return GetUpdatesResponseSchema.load(response.json())
+            response = requests.get(
+                url=url,
+                params={'offset': offset, 'timeout': timeout}
+            )
         except exceptions.RequestException:
-            raise NotImplementedError
+            raise exceptions.RequestException
+        else:
+            return GetUpdatesResponseSchema.load(response.json())
 
     def send_message(self, chat_id: int, text: str) -> SendMessageResponse:
         url = self.get_url(method='sendMessage')
-        response = requests.get(
-            url=url,
-            params={'chat_id': chat_id, 'text': text}
-        )
-
         try:
-            return SendMessageResponseSchema.load(response.json())
+            response = requests.get(
+                url=url,
+                params={'chat_id': chat_id, 'text': text}
+            )
         except exceptions.RequestException:
-            raise NotImplementedError
+            raise exceptions.RequestException
+        else:
+            return SendMessageResponseSchema.load(response.json())
