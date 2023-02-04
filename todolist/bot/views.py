@@ -2,6 +2,8 @@ from rest_framework import permissions, generics, mixins
 
 from bot.models import TgUser
 from bot.serializers import TgUserSerializer
+from bot.tg.client import TgClient
+from todolist import settings
 
 
 class TgUserUpdateView(mixins.UpdateModelMixin, generics.GenericAPIView):
@@ -21,3 +23,11 @@ class TgUserUpdateView(mixins.UpdateModelMixin, generics.GenericAPIView):
     # Реализуем метод PATCH
     def patch(self, request, *args, **kwargs):
         return self.partial_update(request, *args, **kwargs)
+
+    # Переопределяем метод для реализации отправки сообщения об удачной верификации Telegram пользователя
+    def perform_update(self, serializer):
+        tg_user: TgUser = serializer.save()
+        TgClient(token=settings.TG_TOKEN).send_message(
+            chat_id=tg_user.tg_id,
+            text='[verification was successful]'
+        )
