@@ -17,6 +17,7 @@ RUN pip install --no-cache-dir --no-warn-script-location -U pip &&\
 
 # Копирование файлов проекта
 COPY todolist/todolist todolist
+COPY todolist/bot bot
 COPY todolist/core core
 COPY todolist/goals goals
 COPY todolist/manage.py .

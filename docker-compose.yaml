@@ -11,29 +11,13 @@ services:
     volumes:
       - psql_data:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}" ]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
       interval: 5s
       timeout: 5s
       retries: 5
     restart: always
     ports:
     - "5432:5432"
-
-  api:
-    build:
-      context: .
-      dockerfile: dockerfile
-    restart: always
-    environment:
-      DB_HOST: db
-    volumes:
-      - ./.env:/server/.env
-    ports:
-      - "8000:8000"
-    depends_on:
-      db:
-        condition: service_healthy
-    command: gunicorn todolist.wsgi:application -w 4 --bind 0.0.0.0:8000
 
   collectstatic:
     build:
@@ -47,7 +31,36 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    command: python3 manage.py collectstatic -c --no-input
+    command: ["python3", "manage.py", "collectstatic", "-c", "--no-input"]
+
+  api:
+    build:
+      context: .
+      dockerfile: dockerfile
+    restart: always
+    environment:
+      DB_HOST: db
+    volumes:
+      - ./.env:/server/.env
+    ports:
+      - "8000:8000"
+    depends_on:
+      collectstatic:
+        condition: service_completed_successfully
+    command: ["gunicorn", "todolist.wsgi:application", "-w", "4", "--bind", "0.0.0.0:8000"]
+
+  bot:
+    build:
+      context: .
+      dockerfile: dockerfile
+    environment:
+      DB_HOST: db
+    volumes:
+      - ./.env:/server/.env
+    depends_on:
+      api:
+        condition: service_started
+    command: ["python3", "manage.py", "runbot"]
 
   front:
     image: altec3/thesis-front:latest
@@ -56,9 +69,8 @@ services:
     ports:
       - "80:80"
     depends_on:
-      - db
-      - api
-      - collectstatic
+      bot:
+        condition: service_started
 
 volumes:
   psql_data:

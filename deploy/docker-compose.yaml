@@ -11,21 +11,11 @@ services:
     volumes:
       - psql_data:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}" ]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
       interval: 5s
       timeout: 5s
       retries: 5
     restart: always
-
-  api:
-    image: altec3/thesis:latest
-    restart: always
-    env_file:
-      - .env
-    depends_on:
-      db:
-        condition: service_healthy
-    command: gunicorn todolist.wsgi:application -w 4 --bind 0.0.0.0:8000
 
   collectstatic:
     image: altec3/thesis:latest
@@ -36,7 +26,27 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    command: python3 manage.py collectstatic -c --no-input
+    command: ["python3", "manage.py", "collectstatic", "-c", "--no-input"]
+
+  api:
+    image: altec3/thesis:latest
+    restart: always
+    env_file:
+      - .env
+    depends_on:
+      collectstatic:
+        condition: service_completed_successfully
+    command: ["gunicorn", "todolist.wsgi:application", "-w", "4", "--bind", "0.0.0.0:8000"]
+
+  bot:
+    image: altec3/thesis:latest
+    restart: always
+    env_file:
+      - .env
+    depends_on:
+      api:
+        condition: service_started
+    command: ["python3", "manage.py", "runbot"]
 
   front:
     image: altec3/thesis-front:https-latest
@@ -50,9 +60,8 @@ services:
       - SERVER_NAME=lesnikov-a.ga
       - CERTBOT_EMAIL=admin@mail.ru
     depends_on:
-      - db
-      - api
-      - collectstatic
+      bot:
+        condition: service_started
 
 volumes:
   psql_data:
