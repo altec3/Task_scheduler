@@ -60,6 +60,8 @@ services:
       - SERVER_NAME=lesnikov-a.ga
       - CERTBOT_EMAIL=admin@mail.ru
     depends_on:
+      api:
+        condition: service_started
       bot:
         condition: service_started
 
