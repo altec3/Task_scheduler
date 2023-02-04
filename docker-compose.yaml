@@ -22,7 +22,7 @@ services:
   collectstatic:
     build:
       context: .
-      dockerfile: dockerfile
+      dockerfile: dockerfile_dev
     environment:
       DB_HOST: db
     volumes:
@@ -36,7 +36,7 @@ services:
   api:
     build:
       context: .
-      dockerfile: dockerfile
+      dockerfile: dockerfile_dev
     restart: always
     environment:
       DB_HOST: db
@@ -47,12 +47,12 @@ services:
     depends_on:
       collectstatic:
         condition: service_completed_successfully
-    command: ["gunicorn", "todolist.wsgi:application", "-w", "4", "--bind", "0.0.0.0:8000"]
+    command: ["python3", "manage.py", "runserver", "0.0.0.0:8000"]
 
   bot:
     build:
       context: .
-      dockerfile: dockerfile
+      dockerfile: dockerfile_dev
     environment:
       DB_HOST: db
     volumes:
@@ -69,6 +69,8 @@ services:
     ports:
       - "80:80"
     depends_on:
+      api:
+        condition: service_started
       bot:
         condition: service_started
 
