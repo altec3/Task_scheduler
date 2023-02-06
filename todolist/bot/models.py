@@ -1,4 +1,4 @@
-from django.db import models, transaction
+from django.db import models
 
 from core.models import User
 from goals.models import Category
@@ -43,10 +43,9 @@ class TgChatState(models.Model):
         verbose_name_plural = 'Состояния чата'
 
     def set_default(self):
-        with transaction.atomic():
-            self.category = None
-            self.is_create_command = False
-            self.save(update_fields=('category', 'is_create_command',))
+        self.category = None
+        self.is_create_command = False
+        self.save(update_fields=('category', 'is_create_command',))
 
     def __str__(self):
         return str(self.tg_user.tg_id)

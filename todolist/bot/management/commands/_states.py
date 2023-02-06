@@ -1,6 +1,5 @@
 import random
 import string
-from django.db import transaction
 
 from bot.models import TgUser, TgChatState
 from bot.tg.client import TgClient
@@ -30,18 +29,17 @@ class BaseStateClass:
         }
 
     @staticmethod
-    def _generate_verification_code(length: int = 16) -> str:
+    def __generate_verification_code(length: int = 16) -> str:
         symbols = string.ascii_letters + string.digits
         code = ''.join(random.sample(symbols, length))
         return code
 
     def get_verification_code(self) -> str:
-        code = self._generate_verification_code()
+        code = self.__generate_verification_code()
 
-        with transaction.atomic():
-            tg_user = self._tg_user
-            tg_user.verification_code = code
-            tg_user.save(update_fields=('verification_code',))
+        tg_user = self._tg_user
+        tg_user.verification_code = code
+        tg_user.save(update_fields=('verification_code',))
         return code
 
     def _send_message(self, text: str) -> None:
