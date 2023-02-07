@@ -2,7 +2,6 @@ import os
 from pathlib import Path
 from envparse import env
 
-env.read_envfile()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -40,7 +39,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'rest_framework_simplejwt',
     'social_django',
     'django_filters',
     'corsheaders',
@@ -48,6 +46,7 @@ INSTALLED_APPS = [
     # Local
     'core.apps.CoreConfig',
     'goals.apps.GoalsConfig',
+    'bot.apps.BotConfig',
 ]
 
 MIDDLEWARE = [
@@ -162,12 +161,16 @@ REST_FRAMEWORK = {
 }
 
 if DEBUG:
+    import socket
+
+    hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
+
     INSTALLED_APPS += [
         'debug_toolbar',
     ]
     MIDDLEWARE += [
         'debug_toolbar.middleware.DebugToolbarMiddleware',
     ]
-    INTERNAL_IPS = [
-        '127.0.0.1',
-    ]
+    INTERNAL_IPS = [ip[: ip.rfind(".")] + ".1" for ip in ips] + ["127.0.0.1", "10.0.2.2"]
+
+TG_TOKEN = env.str('TG_TOKEN')

@@ -30,26 +30,92 @@ _Стек: python3.10, Django4.1.4, Postgres_
 8. Заметки к целям.
 9. Все перечисленный функции должны быть реализованы в мобильном приложении.
 ####
-### Запуск приложения
+## Запуск проекта
 
 ---
+> Проверить работоспособность проекта можно по адресу [https://lesnikov-a.ga/](https://lesnikov-a.ga/).  
+> В проекте реализован простой Telegram бот, который позволяет просмотреть созданные пользователем цели
+> и создать новую цель.  
+> Для проверки данного функционала в приложении Telegram необходимо начать чат с ботом по имени
+> [todolist_lesnikov_bot](https://t.me/todolist_lesnikov_bot)
 
-Установка зависимостей
+### Локальный сервер:  
+
+Запуск проекта на локальном сервере проще всего производить с помощью платформы Docker.  
+`Требования:`  
+* [обязательно] установленная платформа [Docker](https://docs.docker.com/get-docker/) с
+[Docker Compose](https://docs.docker.com/compose/install/);
+* [желательно] созданное [приложение](https://dev.vk.com/) в соц.сети ВКОНТАКТЕ - для реализации авторизации через данную соц.сеть;
+* [желательно] созданный в приложении Telegram [бот](https://telegram.me/BotFather) - для подключения бота к проекту.
+
+1. Произвести настройку переменных окружения - в папке проекта разметить файл .env со следующими параметрами:
 
 ```python
-pip install poetry
-poetry install
+# Значения параметров (кроме DB-HOST и DJANGO_DEBUG) даны для примера
+DJANGO_DEBUG=1
+DB_NAME=your_db_name
+DB_USER=your_db_user
+DB_PASSWORD=your_db_password
+DB_HOST=localhost
+# Для авторизации через соц.сеть ВКОНТАКТЕ
+VK_OAUTH2_KEY=your_vk_oauth2_key
+VK_OAUTH2_SECRET=your_vk_oauth2_secret
+# Для подключения к проекту Telegram бота.
+TG_TOKEN=your_tg_bot_token
 ```
 
-Запуск с помощью Docker Compose
-
+2. Выполнить команду:
 ```python
-docker-compose up --build -d
+docker compose up --build -d
 ```
 Фронтенд-часть будет доступна по адресу `localhost:80` и будет ваимодействовать с запущенным бэкенд-сервером.  
 
-Создание администратора для админ-панели
+3. При необходимости, создать администратора для админ-панели
 
 ```python
-docker-compose exec api python manage.py createsuperuser
+docker compose exec api python manage.py createsuperuser
 ```
+### Staging сервер:
+
+`Требования:`
+* [обязательно] установленная на сервере платформа [Docker](https://docs.docker.com/get-docker/) с
+[Docker Compose](https://docs.docker.com/compose/install/).
+* [желательно] созданное [приложение](https://dev.vk.com/) в соц.сети ВКОНТАКТЕ - для реализации авторизации через данную соц.сеть;
+* [желательно] созданный в приложении Telegram [бот](https://telegram.me/BotFather) - для подключения бота к проекту.
+
+1. Произвести настройку переменных окружения - в папке проекта на сервере разметить файл .env со следующими параметрами:
+
+```python
+# Значения параметров (кроме DB-HOST и DJANGO_DEBUG) даны для примера
+DJANGO_SK=your_django_secret_key
+DJANGO_DEBUG=0
+DB_NAME=your_db_name
+DB_USER=your_db_user
+DB_PASSWORD=your_db_password
+DB_HOST=db
+# Для авторизации через соц.сеть ВКОНТАКТЕ
+VK_OAUTH2_KEY=your_vk_oauth2_key
+VK_OAUTH2_SECRET=your_vk_oauth2_secret
+# Для подключения к проекту Telegram бота.
+TG_TOKEN=your_tg_bot_token
+```
+2. Отредактировать файл *docker-compose.yaml* в папке `\deploy` - изменить
+значения параметров в секции **environments** сервиса **front**:  
+SERVER_NAME - доменное имя для сертификата. Указать URL-адрес, по которому будет доступен проект;  
+CERTBOT_EMAIL - email администратора веб-сервера. Служит для получения уведомлений о домене или регистрации.
+Изменить по желанию.
+```dockerfile
+front:
+    image: altec3/thesis-front:https-latest
+    (...)
+    environment:
+      - SERVER_NAME=your_domain.com
+      - CERTBOT_EMAIL=admin@mail.ru
+    (...)
+```
+3. Скопировать файл *docker-compose.yaml* из папки `\deploy` на сервер (в папку проекта).
+4. В папке проекта на сервере выполнить команду:
+```python
+docker compose up --build -d
+```
+Проект будет доступен по адресу SERVER_NAME:80.
