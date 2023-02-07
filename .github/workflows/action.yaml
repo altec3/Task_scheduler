@@ -1,5 +1,5 @@
 name: Build and deploy thesis_project
-run-name: Push to 'main' branch from ${{ github.ref_name }} by ${{ github.actor }}
+run-name: Push to 'main' branch by ${{ github.actor }}
 
 on:
   push:
