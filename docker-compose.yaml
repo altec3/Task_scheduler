@@ -11,7 +11,7 @@ services:
     volumes:
       - psql_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      test: ["CMD", "pg_isready", "-U", "${DB_USER}", "-d", "${DB_NAME}"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -23,10 +23,11 @@ services:
     build:
       context: .
       dockerfile: dockerfile_dev
+    env_file:
+      - ./.env
     environment:
       DB_HOST: db
     volumes:
-      - ./.env:/server/.env
       - static:/server/static
     depends_on:
       db:
@@ -37,11 +38,13 @@ services:
     build:
       context: .
       dockerfile: dockerfile_dev
+    env_file:
+      - ./.env
     restart: always
     environment:
       DB_HOST: db
     volumes:
-      - ./.env:/server/.env
+      - ./todolist:/server:ro
     ports:
       - "8000:8000"
     depends_on:
@@ -53,10 +56,10 @@ services:
     build:
       context: .
       dockerfile: dockerfile_dev
+    env_file:
+      - ./.env
     environment:
       DB_HOST: db
-    volumes:
-      - ./.env:/server/.env
     depends_on:
       api:
         condition: service_started
