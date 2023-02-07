@@ -1,8 +1,10 @@
 name: Build and deploy thesis_project
+run-name: Push to 'main' branch from ${{ github.ref_name }} by ${{ github.actor }}
+
 on:
   push:
-    tags:
-      - 'v*'
+    branches:
+      - main
 jobs:
   docker_build_and_push:
     runs-on: ubuntu-latest
@@ -44,10 +46,6 @@ jobs:
         with:
           vault_key: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
           command: "ansible-vault decrypt deploy/.env"
-#      -
-#        name: get tag
-#        id: vars
-#        run: echo "tag=${GITHUB_REF#refs/*/} >> $GITHUB_OUTPUT
       -
         name: copy files to server
         uses: appleboy/scp-action@master
