@@ -21,6 +21,9 @@ djangorestframework = "^3.14.0"
 [tool.poetry.group.dev.dependencies]
 ansible-vault-win = "^1.0.0"
 django-debug-toolbar = "^3.8.1"
+pytest = "^7.2.1"
+pytest-factoryboy = "^2.5.1"
+pytest-django = "^4.5.2"
 
 
 [tool.poetry.group.deploy.dependencies]
