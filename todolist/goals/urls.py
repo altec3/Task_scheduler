@@ -15,6 +15,7 @@ goal_router.register('goal', GoalViewSet)
 comment_router = CustomAPIRouter(trailing_slash=False)
 comment_router.register('goal_comment', CommentViewSet)
 
+app_name = 'goals'
 urlpatterns = [
     path('', include(board_router.urls)),
     path('', include(category_router.urls)),
