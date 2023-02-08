@@ -12,14 +12,12 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('username', 'first_name', 'last_name', 'email', 'password', 'password_repeat')
+        fields = ('id', 'username', 'first_name', 'last_name', 'email', 'password', 'password_repeat')
 
     def validate(self, attrs):
         # Проверка соответствия полей password и password_repeat
         if attrs['password'] != attrs['password_repeat']:
-            raise serializers.ValidationError(
-                "The two password fields didn't match.")
-
+            raise serializers.ValidationError({'password_repeat': ['The two password fields didn\'t match.']})
         return attrs
 
     def create(self, validated_data: dict) -> User:
