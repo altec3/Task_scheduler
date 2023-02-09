@@ -4,6 +4,11 @@ from goals.models import BoardParticipant, Category, Board, Goal, Comment
 
 
 class BoardPermissions(IsAuthenticated):
+    """
+    Разрешает доступ к Доске:
+        - просмотр: все пользователи, добавленные в список участников
+        - редактирование: только автор
+    """
     message = 'Delete or edit boards can owners only.'
 
     def has_object_permission(self, request, view, obj: Board):
@@ -16,6 +21,9 @@ class BoardPermissions(IsAuthenticated):
 
 
 class IsOwnerOrWriter(IsAuthenticated):
+    """
+    Разрешает доступ на редактирование объекта только пользователям с ролью автор или редактор
+    """
     message = 'Delete or edit object can owners or writers only.'
     board = None
 
@@ -38,6 +46,11 @@ class IsOwnerOrWriter(IsAuthenticated):
 
 
 class IsCommentOwner(IsAuthenticated):
+    """
+    Разрешает доступ к комментариям:
+        - просмотр: все пользователи
+        - редактирование: только автор
+    """
     message = 'Delete or edit comments can owners only.'
 
     def has_object_permission(self, request, view, obj: Comment):

@@ -12,7 +12,7 @@ from goals.serializers import (
 
 
 class BoardViewSet(viewsets.ModelViewSet):
-    queryset = Board.objects.all().prefetch_related('participants__user')
+    queryset = Board.objects.all().prefetch_related('participants__user').filter(is_deleted=False)
     permission_classes = [BoardPermissions]
 
     filter_backends = [filters.OrderingFilter]
@@ -27,13 +27,6 @@ class BoardViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self):
         return self._serializers.get(self.action, self._default_serializer)
-
-    # Переопределяем метод для отображения досок с учетом полей user и is_deleted.
-    def get_queryset(self):
-        return super().get_queryset().filter(
-            participants__user_id=self.request.user.id,
-            is_deleted=False
-        )
 
     # Переопределяем метод для добавления в serializer поля user (create).
     def perform_create(self, serializer):

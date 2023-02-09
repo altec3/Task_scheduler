@@ -42,26 +42,26 @@ class BoardUpdateSerializer(serializers.ModelSerializer):
 
     def update(self, instance: Board, validated_data: dict) -> Board:
         owner = validated_data.pop('user')
-        new_participants = validated_data.pop('participants')
-        new_by_id = {part['user'].id: part for part in new_participants}
-        old_participants = instance.participants.exclude(user=owner)
-        with transaction.atomic():
-            for old_participant in old_participants:
-                if old_participant.user_id not in new_by_id:
-                    old_participant.delete()
-                else:
-                    if old_participant.role != new_by_id[old_participant.user_id]['role']:
-                        old_participant.role = new_by_id[old_participant.user_id]['role']
-                        old_participant.save()
-                    new_by_id.pop(old_participant.user_id)
-            for new_part in new_by_id.values():
-                BoardParticipant.objects.create(
-                    user=new_part['user'], board=instance, role=new_part['role']
-                )
-            if title := validated_data.get('title'):
-                instance.title = title
+        if new_participants := validated_data.get('participants'):
+            new_by_id = {part['user'].id: part for part in new_participants}
+            old_participants = instance.participants.exclude(user=owner)
+            with transaction.atomic():
+                for old_participant in old_participants:
+                    if old_participant.user_id not in new_by_id:
+                        old_participant.delete()
+                    else:
+                        if old_participant.role != new_by_id[old_participant.user_id]['role']:
+                            old_participant.role = new_by_id[old_participant.user_id]['role']
+                            old_participant.save()
+                        new_by_id.pop(old_participant.user_id)
+                for new_part in new_by_id.values():
+                    BoardParticipant.objects.create(
+                        user=new_part['user'], board=instance, role=new_part['role']
+                    )
+        if title := validated_data.get('title'):
+            instance.title = title
 
-            instance.save()
+        instance.save()
 
         return instance
 
