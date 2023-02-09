@@ -53,7 +53,7 @@ class BoardViewSet(viewsets.ModelViewSet):
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
-    queryset = Category.objects.all().select_related('user', 'board')
+    queryset = Category.objects.all().filter(is_deleted=False)
 
     filter_backends = [filters.OrderingFilter, filters.SearchFilter, DjangoFilterBackend]
     filterset_fields = ['board']
@@ -75,9 +75,8 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
     # Переопределяем метод для отображения категорий с учетом полей user и is_deleted.
     def get_queryset(self):
-        return super().get_queryset().filter(
-            board__participants__user_id=self.request.user.id,
-            is_deleted=False
+        return super().get_queryset().select_related('user', 'board').filter(
+            board__participants__user_id=self.request.user.id
         )
 
     # Переопределяем метод для добавления в serializer поля user.
