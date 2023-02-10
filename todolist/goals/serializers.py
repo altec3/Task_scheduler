@@ -116,7 +116,7 @@ class GoalCreateSerializer(serializers.ModelSerializer):
                 user_id=self.context['request'].user.id,
                 role__in=(BoardParticipant.Role.owner, BoardParticipant.Role.writer,)
         ).exists():
-            raise serializers.ValidationError('Not owner or writer of category')
+            raise exceptions.PermissionDenied
 
         return value
 
