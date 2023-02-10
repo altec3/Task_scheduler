@@ -147,7 +147,7 @@ class CommentCreateSerializer(serializers.ModelSerializer):
                 user_id=self.context['request'].user.id,
                 role__in=(BoardParticipant.Role.owner, BoardParticipant.Role.writer,)
         ).exists():
-            raise serializers.ValidationError('Not owner or writer of goal')
+            raise exceptions.PermissionDenied
 
         return value
 
