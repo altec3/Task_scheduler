@@ -7,14 +7,25 @@ from goals.models import Goal, Category
 
 
 class BaseStateClass:
+    """Базовый класс для классов состояний чата
+
+    Args:
+        tg_user: Telegram пользователь. Предоставляет доступ к атрибутам пользователя.
+        tg_client: Telegram клиент. Предоставляет доступ к функциям получения входящих обновлений
+            и отправки сообщений.
     """
-    Базовый класс для классов состояний чата
-    """
+
     def __init__(self, tg_user: TgUser, tg_client: TgClient):
         self._tg_user = tg_user
         self.__tg_client = tg_client
+
+        #: str: Текст приветствия бота
         self._text: str | None = None
+
+        #: list of string: Список разрешенных в чате команд
         self._allowed_commands: list = ['/start', '/goals', '/create', '/cancel']
+
+        #: dict: Словарь с вариантами сообщений бота
         self._messages = {
             'allowed_commands': 'Для продолжения отправьте одну из команд:\n'
                                 '/goals - просмотреть все цели;\n'
@@ -35,6 +46,11 @@ class BaseStateClass:
         return code
 
     def get_verification_code(self) -> str:
+        """Возвращает строку из случайных чисел и букв
+
+        Returns:
+             str: последовательность из чисел и букв
+        """
         code = self.__generate_verification_code()
 
         tg_user = self._tg_user
@@ -46,41 +62,60 @@ class BaseStateClass:
         self.__tg_client.send_message(chat_id=self._tg_user.tg_id, text=text)
 
     def run_actions(self) -> None:
-        """
-        Метод выполняющий, характерные для определенного состояния, действия
-        """
+        """Выполняет характерные для определенного состояния действия"""
+
         self._send_message(text=self._text)
         self._send_message(text=self.get_verification_code())
 
 
 class NewState(BaseStateClass):
+    """Класс состояния чата: пользователь не известен
+
+    Args:
+        tg_user: Telegram пользователь. Предоставляет доступ к атрибутам пользователя.
+        tg_client: Telegram клиент. Предоставляет доступ к функциям получения входящих обновлений
+            и отправки сообщений.
     """
-    Класс состояния чата - пользователь не известен
-    """
+
     def __init__(self, tg_user: TgUser, tg_client: TgClient):
         super().__init__(tg_user, tg_client)
+
+        #: str: Текст приветствия бота
         self._text = 'Привет! Я Telegram бот проекта \"TodoList\"\n'+self._messages['verification_required']
 
 
 class NotVerifiedState(BaseStateClass):
-    """
-    Класс состояния чата - пользователь не верифицирован
+    """Класс состояния чата: пользователь не верифицирован
+
+    Args:
+        tg_user: Telegram пользователь. Предоставляет доступ к атрибутам пользователя.
+        tg_client: Telegram клиент. Предоставляет доступ к функциям получения входящих обновлений
+            и отправки сообщений.
     """
     def __init__(self, tg_user: TgUser, tg_client: TgClient):
         super().__init__(tg_user, tg_client)
+
+        #: str: Текст приветствия бота
         self._text = 'С возвращением!\n'+self._messages['verification_required']
 
 
 class VerifiedState(BaseStateClass):
-    """
-    Класс состояния чата - пользователь прошел верификацию
+    """Класс состояния чата: пользователь прошел верификацию
+
+    Args:
+        tg_user: Telegram пользователь. Предоставляет доступ к атрибутам пользователя.
+        tg_client: Telegram клиент. Предоставляет доступ к функциям получения входящих обновлений
+            и отправки сообщений.
     """
     def __init__(self, tg_user: TgUser, tg_client: TgClient, chat_msg: str = None):
         super().__init__(tg_user, tg_client)
         self.__chat_msg = chat_msg
         self.__chat_state, _ = TgChatState.objects.get_or_create(tg_user=tg_user)
 
-    def run_actions(self):
+    def run_actions(self) -> None:
+        """Выполняет характерные для определенного состояния действия"""
+
+        #: bool: Флаг выполнения команды /create
         is_create_command = self.__chat_state.is_create_command
 
         if self.__chat_msg == '/create':
@@ -118,7 +153,6 @@ class VerifiedState(BaseStateClass):
             self._send_message(text=self._messages['successful'])
 
         else:
-            # Если категория не выбрана
             if not self.__chat_state.category_id:
                 categories: list = Category.objects.all().filter(
                     user_id=self._tg_user.user_id,
@@ -136,7 +170,6 @@ class VerifiedState(BaseStateClass):
                     self.__chat_state.save(update_fields=('category_id',))
                     self._send_message(text=self._messages['goal_title'])
             else:
-                # Если категория выбрана
                 goal = Goal.objects.create(
                     user_id=self._tg_user.user_id,
                     category_id=self.__chat_state.category_id,

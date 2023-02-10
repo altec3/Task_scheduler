@@ -6,6 +6,8 @@ from typing import Optional
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class MessageFrom:
+    """Отправитель сообщения"""
+
     id: int
     is_bot: bool
     first_name: str
@@ -19,6 +21,8 @@ class MessageFrom:
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class Chat:
+    """Чат"""
+
     id: int
     type: str
     title: Optional[str] = None
@@ -30,6 +34,8 @@ class Chat:
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class Message:
+    """Сообщение"""
+
     message_id: int
     message_from: MessageFrom = field(metadata=config(field_name='from'))
     date: int
@@ -40,6 +46,8 @@ class Message:
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class Update:
+    """Входящее обновление"""
+
     update_id: int
     message: Optional[Message] = None
     edited_message: Optional[Message] = None
@@ -48,6 +56,8 @@ class Update:
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class GetUpdatesResponse:
+    """Ответ API на метод 'getUpdates'"""
+
     ok: bool
     result: list[Update]
 
@@ -55,6 +65,8 @@ class GetUpdatesResponse:
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class SendMessageResponse:
+    """Ответ API на метод 'sendMessage'"""
+
     ok: bool
     result: Message
 

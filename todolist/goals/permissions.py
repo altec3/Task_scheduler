@@ -4,14 +4,14 @@ from goals.models import BoardParticipant, Category, Board, Goal, Comment
 
 
 class BoardPermissions(IsAuthenticated):
-    """
-    Разрешает доступ к Доске:
-        - просмотр: все пользователи, добавленные в список участников
-        - редактирование: только автор
+    """Определяет доступ к запросу на эндпоинт /goals/board{/<id>}.
+
+        - просмотр: авторизованные пользователи, добавленные в список участников
+        - редактирование: только владелец
     """
     message = 'Delete or edit boards can owners only.'
 
-    def has_object_permission(self, request, view, obj: Board):
+    def has_object_permission(self, request, view, obj: Board) -> bool:
         _filters: dict = {'user_id': request.user.id}
 
         if request.method not in SAFE_METHODS:
@@ -21,13 +21,15 @@ class BoardPermissions(IsAuthenticated):
 
 
 class IsOwnerOrWriter(IsAuthenticated):
-    """
-    Разрешает доступ на редактирование объекта только пользователям с ролью автор или редактор
+    """Определяет доступ на редактирование объекта
+
+        - просмотр: все авторизованные пользователи
+        - редактирование: только владелец или редактор
     """
     message = 'Delete or edit object can owners or writers only.'
     board = None
 
-    def has_object_permission(self, request, view, obj):
+    def has_object_permission(self, request, view, obj) -> bool:
         _filters: dict = {'user_id': request.user.id}
 
         if isinstance(obj, Category):
@@ -46,14 +48,14 @@ class IsOwnerOrWriter(IsAuthenticated):
 
 
 class IsCommentOwner(IsAuthenticated):
-    """
-    Разрешает доступ к комментариям:
-        - просмотр: все пользователи
+    """Определяет доступ на редактирование комментария
+
+        - просмотр: все авторизованные пользователи
         - редактирование: только автор
     """
     message = 'Delete or edit comments can owners only.'
 
-    def has_object_permission(self, request, view, obj: Comment):
+    def has_object_permission(self, request, view, obj: Comment) -> bool:
         return any((
             request.method in SAFE_METHODS,
             obj.user.id == request.user.id

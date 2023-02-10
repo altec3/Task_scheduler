@@ -5,6 +5,10 @@ from goals.models import Goal
 
 
 class GoalsFilter(django_filters.rest_framework.FilterSet):
+    """Фильтр для целей
+
+    Реализует фильтрацию целей по дате дедлайна, категории, статусу, приоритету
+    """
     class Meta:
         model = Goal
         fields = {

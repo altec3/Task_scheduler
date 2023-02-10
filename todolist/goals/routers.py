@@ -2,9 +2,10 @@ from rest_framework.routers import Route, SimpleRouter
 
 
 class CustomAPIRouter(SimpleRouter):
+    """Маршрутизатор для выполнения требований к структуре URL проекта"""
 
     routes = [
-        # Create route.
+        #: Create route.
         Route(
             url=r'^{prefix}/create{trailing_slash}$',
             mapping={'post': 'create'},
@@ -12,7 +13,7 @@ class CustomAPIRouter(SimpleRouter):
             detail=False,
             initkwargs={'suffix': 'Create'}
         ),
-        # List route.
+        #: List route.
         Route(
             url=r'^{prefix}/list{trailing_slash}$',
             mapping={'get': 'list'},
@@ -20,7 +21,7 @@ class CustomAPIRouter(SimpleRouter):
             detail=False,
             initkwargs={'suffix': 'List'}
         ),
-        # Detail route.
+        #: Detail route.
         Route(
             url=r'^{prefix}/{lookup}{trailing_slash}$',
             mapping={
