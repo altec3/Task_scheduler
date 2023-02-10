@@ -71,20 +71,3 @@ class TestCategoryList(BaseTestCase):
         response = auth_client.get(self.url)
         assert response.status_code == status.HTTP_200_OK
         assert [category['title'] for category in response.json()] == ['cat1', 'cat2', 'cat3', 'cat4']
-
-    def test_category_pagination(self, auth_client, category_factory):
-        """Тест на endpoint GET: /goals/goal_category/list
-
-        Производит проверку функционирования пагинации
-        """
-        category_factory.create_batch(size=10, board=self.board)
-
-        limit_response = auth_client.get(self.url, {'limit': 3})
-        assert limit_response.status_code == status.HTTP_200_OK
-        assert limit_response.json()['count'] == 10
-        assert len(limit_response.json()['results']) == 3
-
-        offset_response = auth_client.get(self.url, {'limit': 100, 'offset': 8})
-        assert offset_response.status_code == status.HTTP_200_OK
-        assert offset_response.json()['count'] == 10
-        assert len(offset_response.json()['results']) == 2

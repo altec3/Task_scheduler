@@ -7,17 +7,22 @@ from goals.models import Board, BoardParticipant
 
 
 @pytest.mark.django_db()
-class TestCreateBoardView(BaseTestCase):
-    """POST: Создание доски"""
+class TestBoardCreate(BaseTestCase):
     url = reverse('goals:board-create')
 
     def test_auth_required(self, client, faker):
-        """Проверка permissions"""
+        """Тест на эндпоинт POST: /goals/board/create
+
+        Производит проверку требований аутентификации.
+        """
         response = client.post(self.url, data=faker.pydict(1))
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
     def test_failed_to_create_deleted_board(self, auth_client, faker):
-        """POST: Невозможно создать доску со статусом 'is_deleted': True"""
+        """Тест на эндпоинт POST: /goals/board/create
+
+        Производит проверку отсутствия возможности создать доску со статусом 'is_deleted': True
+        """
         response = auth_client.post(self.url, data={
             'title': faker.sentence(),
             'is_deleted': True
@@ -27,7 +32,10 @@ class TestCreateBoardView(BaseTestCase):
         assert not new_board.is_deleted
 
     def test_creates_board_participant(self, auth_client, user, faker):
-        """POST: Проверка создания владельца доски"""
+        """Тест на эндпоинт POST: /goals/board/create
+
+        Производит проверку факта создания владельца доски при создании доски
+        """
         response = auth_client.post(self.url, data={
             'title': faker.sentence(),
         })
@@ -39,7 +47,10 @@ class TestCreateBoardView(BaseTestCase):
         assert participants[0].role == BoardParticipant.Role.owner
 
     def test_success(self, auth_client, settings):
-        """POST: Доска создана"""
+        """Тест на эндпоинт POST: /goals/board/create
+
+        Производит проверку корректности структуры ответа при успешном создании доски.
+        """
         response = auth_client.post(self.url, data={
             'title': 'Board Title',
         })

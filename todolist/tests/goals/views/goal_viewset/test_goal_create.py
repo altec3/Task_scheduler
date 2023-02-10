@@ -2,7 +2,7 @@ import pytest
 from django.urls import reverse
 from rest_framework import status
 
-from goals.models import Category, Board, BoardParticipant, Goal
+from goals.models import Category, Board, BoardParticipant
 from tests.utils import BaseTestCase
 
 

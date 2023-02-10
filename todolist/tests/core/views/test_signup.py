@@ -6,12 +6,14 @@ from tests.utils import BaseTestCase
 
 
 @pytest.mark.django_db()
-class TestSignupView(BaseTestCase):
-    """POST: Регистрация пользователя"""
+class TestUserCreateView(BaseTestCase):
     url = reverse('core:user_create')
 
     def test_passwords_missmatch(self, client, faker):
-        """POST: Соответствие полей 'Password' и 'Password repeat'"""
+        """Тест на эндпоинт POST: /core/signup
+
+        Производит проверку соответствия полей 'Password' и 'Password repeat'.
+        """
         response = client.post(self.url, data={
             'username': faker.user_name(),
             'password': faker.password(),
@@ -21,7 +23,14 @@ class TestSignupView(BaseTestCase):
         assert response.json() == {'password_repeat': ['The two password fields didn\'t match.']}
 
     def test_invalid_password(self, client, faker, invalid_password):
-        """POST: Проверка валидации пароля"""
+        """Тест на эндпоинт POST: /core/signup
+
+        Производит проверку процедуры валидации пароля.
+        Проверяется проверка пароля на соответствие следующим требованиям:
+            - пароль имеет соответствующую длину
+            - пароль не входит в список часто встречающихся паролей
+            - пароль не состоит только из чисел
+        """
         response = client.post(self.url, data={
             'username': faker.user_name(),
             'password': invalid_password,
@@ -30,7 +39,11 @@ class TestSignupView(BaseTestCase):
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     def test_success(self, client, user_factory, django_user_model):
-        """POST: Успешная регистрация пользователя"""
+        """Тест на эндпоинт POST: /core/signup
+
+        Производит проверку процедуры успешной регистрации пользователя,
+        а также проверку корректности структуры ответа.
+        """
         assert not django_user_model.objects.count()
 
         user_data = user_factory.build()

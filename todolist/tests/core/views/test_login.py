@@ -6,12 +6,14 @@ from tests.utils import BaseTestCase
 
 
 @pytest.mark.django_db()
-class TestLoginView(BaseTestCase):
+class TestUserLoginView(BaseTestCase):
     url = reverse('core:user_login')
 
     def test_invalid_credentials(self, client, user_factory):
-        """Предоставлены не верные логин и пароль"""
+        """Тест на эндпоинт POST: /core/login
 
+        Производит проверку корректности предоставленных логина и пароля.
+        """
         user = user_factory.build()
         response = client.post(self.url, data={
             'username': user.username,
@@ -20,8 +22,10 @@ class TestLoginView(BaseTestCase):
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
     def test_invalid_password(self, client, user_factory, faker):
-        """Предоставлен не верный пароль"""
+        """Тест на эндпоинт POST: /core/login
 
+        Производит проверку корректности предоставленного пароля.
+        """
         user = user_factory.create()
         password = faker.password()
         response = client.post(self.url, data={
@@ -31,8 +35,11 @@ class TestLoginView(BaseTestCase):
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
     def test_success(self, client, faker, user_factory):
-        """Предоставлены верные логин и пароль"""
+        """Тест на эндпоинт POST: /core/login
 
+        Производит проверку успешной аутентификации при действительных логине и пароле,
+        а также проверку корректности структуры ответа.
+        """
         password = faker.password()
         user = user_factory.create(password=password)
         response = client.post(self.url, data={

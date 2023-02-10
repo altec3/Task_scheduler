@@ -7,16 +7,21 @@ from tests.utils import BaseTestCase
 
 @pytest.mark.django_db()
 class TestUpdatePasswordView(BaseTestCase):
-    """PUT, PATCH: Обновление пароля пользователя"""
     url = reverse('core:password_update')
 
     def test_auth_required(self, client):
-        """Проверка permissions"""
+        """Тест на эндпоинт PATCH: /core/update_password
+
+        Производит проверку требований аутентификации.
+        """
         response = client.patch(self.url)
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
     def test_invalid_old_password(self, auth_client, faker):
-        """PATCH: В поле 'old_password' предоставлен не верный пароль"""
+        """Тест на эндпоинт PATCH: /core/update_password
+
+        Производит проверку соответствия значения поля 'old_password' значению текущего пароля.
+        """
         response = auth_client.patch(self.url, data={
             'old_password': faker.password(),
             'new_password': faker.password(),
@@ -25,8 +30,10 @@ class TestUpdatePasswordView(BaseTestCase):
         assert response.json() == {'old_password': ['Old password is incorrect']}
 
     def test_weak_new_password(self, client, user_factory, faker, invalid_password):
-        """
-        POST: Проверка валидации нового пароля:
+        """Тест на эндпоинт POST: /core/update_password
+
+        Производит проверку процедуры валидации нового пароля.
+        Проверяется проверка пароля на соответствие следующим требованиям:
             - пароль имеет соответствующую длину
             - пароль не входит в список часто встречающихся паролей
             - пароль не состоит только из чисел
@@ -42,7 +49,10 @@ class TestUpdatePasswordView(BaseTestCase):
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     def test_success(self, client, faker, user_factory):
-        """PATCH: Пароль обновлен"""
+        """Тест на эндпоинт PATCH: /core/update_password
+
+        Производит проверку процедуры успешного изменения пароля.
+        """
         old_password = faker.password()
         user = user_factory.create(password=old_password)
 

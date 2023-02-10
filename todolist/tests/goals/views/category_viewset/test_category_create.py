@@ -37,7 +37,7 @@ class TestCategoryCreate(BaseTestCase):
         new_category: Category = Category.objects.last()
         assert not new_category.is_deleted
 
-    def test_reader_cannot_create_category(self, auth_client, faker):
+    def test_failed_create_category_by_reader(self, auth_client, faker):
         """Тест на endpoint POST: /goals/goal_category/create
 
         Производит проверку отсутствия возможности у пользователя создать категорию в доске,
@@ -45,6 +45,7 @@ class TestCategoryCreate(BaseTestCase):
         """
         self.participant.role = BoardParticipant.Role.reader
         self.participant.save(update_fields=('role',))
+        assert self.participant.role == BoardParticipant.Role.reader
 
         response = auth_client.post(self.url, data={
             'title': faker.sentence(),
@@ -57,7 +58,7 @@ class TestCategoryCreate(BaseTestCase):
         [BoardParticipant.Role.owner, BoardParticipant.Role.writer],
         ids=['owner', 'writer']
     )
-    def test_success(self, auth_client, user_role, faker):
+    def test_success_create_category_by_owner_or_writer(self, auth_client, user_role, faker):
         """Тест на endpoint POST: /goals/goal_category/create
 
         Производит проверку наличия возможности у пользователя создать категорию в доске,

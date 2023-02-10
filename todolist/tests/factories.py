@@ -7,7 +7,7 @@ from goals.models import BoardParticipant
 
 @register
 class UserFactory(factory.django.DjangoModelFactory):
-    """Фабрика по созданию объекта user"""
+    """Фабрика по созданию экземпляра модели User"""
 
     username = factory.Faker('user_name')
     password = factory.Faker('password')
@@ -31,7 +31,7 @@ class DatesFactoryMixin(factory.django.DjangoModelFactory):
 
 @register
 class BoardFactory(DatesFactoryMixin):
-    """Фабрика по созданию объекта board"""
+    """Фабрика по созданию экземпляра модели Board"""
 
     title = factory.Faker('sentence')
 
@@ -46,6 +46,7 @@ class BoardFactory(DatesFactoryMixin):
 
 @register
 class BoardParticipantFactory(DatesFactoryMixin):
+    """Фабрика по созданию экземпляра модели BoardParticipant"""
     board = factory.SubFactory(BoardFactory)
     user = factory.SubFactory(UserFactory)
 
@@ -55,7 +56,7 @@ class BoardParticipantFactory(DatesFactoryMixin):
 
 @register
 class CategoryFactory(DatesFactoryMixin):
-    """Фабрика по созданию объекта category"""
+    """Фабрика по созданию экземпляра модели Category"""
 
     board = factory.SubFactory(BoardFactory)
     title = factory.Faker('sentence')
@@ -67,7 +68,7 @@ class CategoryFactory(DatesFactoryMixin):
 
 @register
 class GoalFactory(DatesFactoryMixin):
-    """Фабрика по созданию объекта goal"""
+    """Фабрика по созданию экземпляра модели Goal"""
 
     user = factory.SubFactory(UserFactory)
     category = factory.SubFactory(CategoryFactory)
@@ -79,7 +80,7 @@ class GoalFactory(DatesFactoryMixin):
 
 @register
 class CommentFactory(DatesFactoryMixin):
-    """Фабрика по созданию объекта comment"""
+    """Фабрика по созданию экземпляра модели Comment"""
 
     user = factory.SubFactory(UserFactory)
     goal = factory.SubFactory(GoalFactory)

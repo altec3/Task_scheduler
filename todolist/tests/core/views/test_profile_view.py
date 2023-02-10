@@ -7,17 +7,22 @@ from tests.utils import BaseTestCase
 
 
 @pytest.mark.django_db()
-class TestProfileRetrieveView(BaseTestCase):
-    """GET: Просмотр профиля пользователя"""
+class TestUserRetrieve(BaseTestCase):
     url = reverse('core:user_retrieve')
 
     def test_auth_required(self, client):
-        """Проверка permissions"""
+        """Тест на эндпоинт GET: /core/profile
+
+        Производит проверку требований аутентификации.
+        """
         response = client.get(self.url)
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
     def test_success(self, auth_client, user):
-        """GET: Профиль пользователя предоставлен"""
+        """Тест на эндпоинт GET: /core/profile
+
+        Производит проверку корректности структуры ответа при успешном запросе профиля пользователя.
+        """
         response = auth_client.get(self.url)
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == {
@@ -30,18 +35,24 @@ class TestProfileRetrieveView(BaseTestCase):
 
 
 @pytest.mark.django_db()
-class TestProfileUpdateView:
-    """PUT, PATCH: Обновление профиля пользователя"""
+class TestUserUpdate:
     url = reverse('core:user_retrieve')
 
     def test_auth_required(self, client, faker):
-        """Проверка permissions"""
+        """Тест на эндпоинт PATCH: /core/profile
+
+        Производит проверку требований аутентификации.
+        """
         response = client.patch(self.url, data=faker.pydict(1))
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
     @pytest.mark.parametrize('user__email', ['test_1@test.com'])
     def test_success(self, client, user):
-        """PATCH: Профиль обновлен"""
+        """Тест на эндпоинт PATCH: /core/profile
+
+         Производит проверку функционала обновления профиля пользователя,
+         а также проверку корректности структуры ответа.
+         """
         client.force_login(user)
         response = client.patch(self.url, data={'email': 'test_2@test.com'})
         assert response.status_code == status.HTTP_200_OK
@@ -55,17 +66,22 @@ class TestProfileUpdateView:
 
 
 @pytest.mark.django_db()
-class TestDestroyProfileView:
-    """DELETE:Выход пользователя из системы"""
+class TestUserDestroy:
     url = reverse('core:user_retrieve')
 
     def test_auth_required(self, client):
-        """Проверка permissions"""
+        """Тест на эндпоинт DELETE: /core/profile
+
+        Производит проверку требований аутентификации.
+        """
         response = client.delete(self.url)
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
     def test_user_not_deleted(self, django_user_model, auth_client):
-        """DELETE:Пользователь не удален из базы"""
+        """Тест на эндпоинт DELETE: /core/profile
+
+        Производит проверку отсутствия функционала удаления пользователя из базы через метод DELETE.
+        """
         initial_count: int = django_user_model.objects.count()
         response = auth_client.delete(self.url)
         assert response.status_code == status.HTTP_204_NO_CONTENT
@@ -73,7 +89,10 @@ class TestDestroyProfileView:
 
     @pytest.mark.parametrize('backend', settings.AUTHENTICATION_BACKENDS)
     def test_cleanup_cookie(self, client, user, backend):
-        """DELETE:Пользователь вышел из системы"""
+        """Тест на эндпоинт DELETE: /core/profile
+
+        Производит проверку функционала выхода пользователя из системы через метод DELETE.
+        """
         client.force_login(user=user, backend=backend)
         assert client.cookies['sessionid'].value
         response = client.delete(self.url)
