@@ -45,23 +45,9 @@ _Стек: python3.10, Django4.1.4, Postgres_
 * [обязательно] установленная платформа [Docker](https://docs.docker.com/get-docker/) с
 [Docker Compose](https://docs.docker.com/compose/install/);
 * [желательно] созданное [приложение](https://dev.vk.com/) в соц.сети ВКОНТАКТЕ - для реализации авторизации через данную соц.сеть;
-* [желательно] созданный в приложении Telegram [бот](https://telegram.me/BotFather) - для подключения бота к проекту.
+* [желательно] созданный [бот](https://telegram.me/BotFather) в приложении Telegram - для подключения бота к проекту.
 
-1. Произвести настройку переменных окружения - в папке проекта разметить файл .env со следующими параметрами:
-
-```python
-# Значения параметров (кроме DB-HOST и DJANGO_DEBUG) даны для примера
-DJANGO_DEBUG=1
-DB_NAME=your_db_name
-DB_USER=your_db_user
-DB_PASSWORD=your_db_password
-DB_HOST=localhost
-# Для авторизации через соц.сеть ВКОНТАКТЕ
-VK_OAUTH2_KEY=your_vk_oauth2_key
-VK_OAUTH2_SECRET=your_vk_oauth2_secret
-# Для подключения к проекту Telegram бота.
-TG_TOKEN=your_tg_bot_token
-```
+1. Произвести настройку переменных окружения - в папке проекта разметить файл .env (см. файл **.env.example**):
 
 2. Выполнить команду:
 ```python
@@ -80,25 +66,11 @@ docker compose exec api python manage.py createsuperuser
 * [обязательно] установленная на сервере платформа [Docker](https://docs.docker.com/get-docker/) с
 [Docker Compose](https://docs.docker.com/compose/install/).
 * [желательно] созданное [приложение](https://dev.vk.com/) в соц.сети ВКОНТАКТЕ - для реализации авторизации через данную соц.сеть;
-* [желательно] созданный в приложении Telegram [бот](https://telegram.me/BotFather) - для подключения бота к проекту.
+* [желательно] созданный [бот](https://telegram.me/BotFather) в приложении Telegram - для подключения бота к проекту.
 
-1. Произвести настройку переменных окружения - в папке проекта на сервере разметить файл .env со следующими параметрами:
+1. Произвести настройку переменных окружения - в папке проекта на сервере разметить файл .env (см. файл **.env.example**):
 
-```python
-# Значения параметров (кроме DB-HOST и DJANGO_DEBUG) даны для примера
-DJANGO_SK=your_django_secret_key
-DJANGO_DEBUG=0
-DB_NAME=your_db_name
-DB_USER=your_db_user
-DB_PASSWORD=your_db_password
-DB_HOST=db
-# Для авторизации через соц.сеть ВКОНТАКТЕ
-VK_OAUTH2_KEY=your_vk_oauth2_key
-VK_OAUTH2_SECRET=your_vk_oauth2_secret
-# Для подключения к проекту Telegram бота.
-TG_TOKEN=your_tg_bot_token
-```
-2. Отредактировать файл *docker-compose.yaml* в папке `\deploy` - изменить
+2. Отредактировать файл **docker-compose.yaml** в папке `\deploy` - изменить
 значения параметров в секции **environments** сервиса **front**:  
 SERVER_NAME - доменное имя для сертификата. Указать URL-адрес, по которому будет доступен проект;  
 CERTBOT_EMAIL - email администратора веб-сервера. Служит для получения уведомлений о домене или регистрации.
@@ -112,7 +84,7 @@ front:
       - CERTBOT_EMAIL=admin@mail.ru
     (...)
 ```
-3. Скопировать файл *docker-compose.yaml* из папки `\deploy` на сервер (в папку проекта).
+3. Скопировать файл **docker-compose.yaml** из папки `\deploy` на сервер (в папку проекта).
 4. В папке проекта на сервере выполнить команду:
 ```python
 docker compose up --build -d
