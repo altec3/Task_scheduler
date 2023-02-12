@@ -93,11 +93,15 @@ docker compose up --build -d
 
 ### Запуск тестов:
 
-1. Перейти в папку `\todolist`
+1. Запустить контейнер с PostgreSQL:
+```python
+docker compose up db -d
+```
+2. Перейти в папку `\todolist`:
 ```python
 cd todolist
 ```
-2. Выполнить команду:
+3. Выполнить команду:
 ```python
 pytest
 ```
