@@ -10,9 +10,10 @@ class BaseStateClass:
     """Базовый класс для классов состояний чата
 
     Args:
-        tg_user: Telegram пользователь. Предоставляет доступ к атрибутам пользователя.
-        tg_client: Telegram клиент. Предоставляет доступ к функциям получения входящих обновлений
-            и отправки сообщений.
+        tg_user: Telegram пользователь. Предоставляет доступ к атрибутам
+            пользователя.
+        tg_client: Telegram клиент. Предоставляет доступ к функциям получения
+            входящих обновлений и отправки сообщений.
     """
 
     def __init__(self, tg_user: TgUser, tg_client: TgClient):
@@ -23,7 +24,9 @@ class BaseStateClass:
         self._text: str | None = None
 
         #: list of string: Список разрешенных в чате команд
-        self._allowed_commands: list = ['/start', '/goals', '/create', '/cancel']
+        self._allowed_commands: list = [
+            '/start', '/goals', '/create', '/cancel'
+        ]
 
         #: dict: Словарь с вариантами сообщений бота
         self._messages = {
@@ -32,8 +35,9 @@ class BaseStateClass:
                                 '/create - создать цель;\n'
                                 '/cancel - отменить создание цели.',
             'unknown_command': '[unknown command]\n',
-            'verification_required': 'Для продолжения необходимо пройти верификацию.',
-            'select_category': 'Отправьте название категории, в которой будет создана цель:\n',
+            'verification_required': 'Необходимо пройти верификацию.',
+            'select_category': 'Отправьте название категории, '
+                               ' которой будет создана цель:\n',
             'goal_title': 'Отправьте название цели.',
             'successful': '[successful]',
             'failure': '[failure]',
@@ -72,45 +76,54 @@ class NewState(BaseStateClass):
     """Класс состояния чата: пользователь не известен
 
     Args:
-        tg_user: Telegram пользователь. Предоставляет доступ к атрибутам пользователя.
-        tg_client: Telegram клиент. Предоставляет доступ к функциям получения входящих обновлений
-            и отправки сообщений.
+        tg_user: Telegram пользователь. Предоставляет доступ к атрибутам
+            пользователя.
+        tg_client: Telegram клиент. Предоставляет доступ к функциям получения
+            входящих обновлений и отправки сообщений.
     """
 
     def __init__(self, tg_user: TgUser, tg_client: TgClient):
         super().__init__(tg_user, tg_client)
 
         #: str: Текст приветствия бота
-        self._text = 'Привет! Я Telegram бот проекта \"TodoList\"\n'+self._messages['verification_required']
+        self._text = 'Привет! Я Telegram бот проекта \"TodoList\"\n' \
+                     + self._messages['verification_required']
 
 
 class NotVerifiedState(BaseStateClass):
     """Класс состояния чата: пользователь не верифицирован
 
     Args:
-        tg_user: Telegram пользователь. Предоставляет доступ к атрибутам пользователя.
-        tg_client: Telegram клиент. Предоставляет доступ к функциям получения входящих обновлений
-            и отправки сообщений.
+        tg_user: Telegram пользователь. Предоставляет доступ к атрибутам
+            пользователя.
+        tg_client: Telegram клиент. Предоставляет доступ к функциям получения
+            входящих обновлений и отправки сообщений.
     """
+
     def __init__(self, tg_user: TgUser, tg_client: TgClient):
         super().__init__(tg_user, tg_client)
 
         #: str: Текст приветствия бота
-        self._text = 'С возвращением!\n'+self._messages['verification_required']
+        self._text = 'С возвращением!\n' + self._messages[
+            'verification_required']
 
 
 class VerifiedState(BaseStateClass):
     """Класс состояния чата: пользователь прошел верификацию
 
     Args:
-        tg_user: Telegram пользователь. Предоставляет доступ к атрибутам пользователя.
-        tg_client: Telegram клиент. Предоставляет доступ к функциям получения входящих обновлений
-            и отправки сообщений.
+        tg_user: Telegram пользователь. Предоставляет доступ к атрибутам
+            пользователя.
+        tg_client: Telegram клиент. Предоставляет доступ к функциям получения
+            входящих обновлений и отправки сообщений.
     """
-    def __init__(self, tg_user: TgUser, tg_client: TgClient, chat_msg: str = None):
+
+    def __init__(self, tg_user: TgUser, tg_client: TgClient,
+                 chat_msg: str = None):
         super().__init__(tg_user, tg_client)
         self.__chat_msg = chat_msg
-        self.__chat_state, _ = TgChatState.objects.get_or_create(tg_user=tg_user)
+        self.__chat_state, _ = TgChatState.objects.get_or_create(
+            tg_user=tg_user)
 
     def run_actions(self) -> None:
         """Выполняет характерные для определенного состояния действия"""
@@ -128,13 +141,16 @@ class VerifiedState(BaseStateClass):
             ).values_list('title', flat=True)
 
             self._send_message(
-                text=self._messages['select_category'] + '\n'.join(categories) if categories
+                text=self._messages['select_category'] + '\n'.join(
+                    categories) if categories
                 else '[categories not found]'
             )
 
         if not is_create_command:
             if self.__chat_msg not in self._allowed_commands:
-                self._send_message(text=self._messages['unknown_command']+self._messages['allowed_commands'])
+                self._send_message(
+                    text=self._messages['unknown_command'] + self._messages[
+                        'allowed_commands'])
 
             if self.__chat_msg == '/start':
                 self._send_message(text=self._messages['allowed_commands'])
@@ -146,7 +162,8 @@ class VerifiedState(BaseStateClass):
                     status__lt=Goal.Status.archived,
                 ).values_list('title', flat=True)
 
-                self._send_message(text='\n'.join(goals) if goals else '[goals not found]')
+                self._send_message(
+                    text='\n'.join(goals) if goals else '[goals not found]')
 
         elif self.__chat_msg == '/cancel':
             self.__chat_state.set_default()
@@ -161,11 +178,14 @@ class VerifiedState(BaseStateClass):
 
                 if self.__chat_msg not in categories:
                     self._send_message(
-                        text=self._messages['select_category'] + '\n'.join(categories) if categories
+                        text=self._messages['select_category'] + '\n'.join(
+                            categories) if categories
                         else '[categories not found]'
                     )
                 else:
-                    category = Category.objects.all().filter(user_id=self._tg_user.user_id).get(title=self.__chat_msg)
+                    category = Category.objects.all().filter(
+                        user_id=self._tg_user.user_id).get(
+                        title=self.__chat_msg)
                     self.__chat_state.category_id = category.id
                     self.__chat_state.save(update_fields=('category_id',))
                     self._send_message(text=self._messages['goal_title'])
