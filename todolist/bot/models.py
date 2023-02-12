@@ -5,6 +5,10 @@ from goals.models import Category
 
 
 class TgUser(models.Model):
+    """Модель для реализации верификации пользователя в Telegram чате
+
+    Сопоставляет пользователя проекта 'todolist' с пользователем Telegram чата
+    """
 
     tg_id = models.IntegerField(verbose_name='ID пользователя в Telegram', unique=True)
     tg_username = models.CharField(verbose_name='Имя пользователя в Telegram', max_length=255, null=True, blank=True)
@@ -25,6 +29,11 @@ class TgUser(models.Model):
 
 
 class TgChatState(models.Model):
+    """Модель для реализации команды /create
+
+    Сохраняет статус команды /create и сопутствующих параметров
+    """
+
     tg_user = models.ForeignKey(TgUser,
                                 verbose_name='TG пользователь',
                                 related_name='tg_chat_state',

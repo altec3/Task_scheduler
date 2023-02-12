@@ -22,7 +22,7 @@ services:
   collectstatic:
     build:
       context: .
-      dockerfile: dockerfile_dev
+      target: dev_image
     env_file:
       - ./.env
     environment:
@@ -37,7 +37,7 @@ services:
   api:
     build:
       context: .
-      dockerfile: dockerfile_dev
+      target: dev_image
     env_file:
       - ./.env
     restart: always
@@ -55,7 +55,7 @@ services:
   bot:
     build:
       context: .
-      dockerfile: dockerfile_dev
+      target: dev_image
     env_file:
       - ./.env
     environment:

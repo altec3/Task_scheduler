@@ -10,13 +10,19 @@ from core.serializers import UserRegistrationSerializer, UserLoginSerializer, Pr
 
 
 class UserCreateView(CreateAPIView):
-    """Create a new user"""
+    """Представление для обработки запроса на эндпоинт POST: /core/signup
+
+    Регистрация пользователя
+    """
     permission_classes = [AllowAny]
     serializer_class = UserRegistrationSerializer
 
 
 class UserLoginView(CreateAPIView):
-    """Login a user"""
+    """Представление для обработки запроса на эндпоинт POST: /core/login
+
+    Авторизация пользователя
+    """
     permission_classes = [AllowAny]
     serializer_class = UserLoginSerializer
 
@@ -26,12 +32,16 @@ class UserLoginView(CreateAPIView):
         self.perform_create(serializer)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    #: Реализация авторизации пользователя
     def perform_create(self, serializer):
         login(request=self.request, user=serializer.save())
 
 
 class UserRetrieveView(RetrieveUpdateDestroyAPIView):
-    """Retrieve a user"""
+    """Представление для обработки запроса на эндпоинт [GET, PUT, PATCH, DELETE]: /core/profile
+
+    Редактирование профиля пользователя
+    """
     queryset = User.objects.all()
     permission_classes = [IsAuthenticated]
     serializer_class = ProfileSerializer
@@ -39,12 +49,16 @@ class UserRetrieveView(RetrieveUpdateDestroyAPIView):
     def get_object(self):
         return self.request.user
 
+    #: Выход из текущего аккаунта (logout)
     def perform_destroy(self, instance):
         logout(self.request)
 
 
 class UpdatePasswordView(UpdateAPIView):
-    """Update password"""
+    """Представление для обработки запроса на эндпоинт [PUT, PATCH]: /core/update_password
+
+    Изменение пароля пользователя
+    """
     permission_classes = [IsAuthenticated]
     serializer_class = UpdatePasswordSerializer
 

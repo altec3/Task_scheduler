@@ -4,7 +4,9 @@ from bot.models import TgUser
 
 
 class TgUserSerializer(serializers.ModelSerializer):
+    """Сериализатор представления TgUserUpdateView"""
 
+    #: Переопределяем метод для добавления id текущего пользователя в экземпляр модели TgUser
     def update(self, instance: TgUser, validated_data: dict) -> TgUser:
         user = self.context['request'].user
         instance.user_id = user.id

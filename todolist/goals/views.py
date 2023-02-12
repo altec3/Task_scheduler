@@ -12,7 +12,11 @@ from goals.serializers import (
 
 
 class BoardViewSet(viewsets.ModelViewSet):
-    queryset = Board.objects.all().prefetch_related('participants__user')
+    """Представление для обработки запроса на эндпоинт /goals/board{/<id>}
+
+    Действия над доской
+    """
+    queryset = Board.objects.all().filter(is_deleted=False)
     permission_classes = [BoardPermissions]
 
     filter_backends = [filters.OrderingFilter]
@@ -25,25 +29,25 @@ class BoardViewSet(viewsets.ModelViewSet):
     }
     _default_serializer = BoardUpdateSerializer
 
+    #: Получение сериализатора
     def get_serializer_class(self):
         return self._serializers.get(self.action, self._default_serializer)
 
-    # Переопределяем метод для отображения досок с учетом полей user и is_deleted.
+    #: Переопределяем метод для отображения досок с учетом полей user и is_deleted.
     def get_queryset(self):
-        return super().get_queryset().filter(
+        return super().get_queryset().prefetch_related('participants__user').filter(
             participants__user_id=self.request.user.id,
-            is_deleted=False
         )
 
-    # Переопределяем метод для добавления в serializer поля user (create).
+    #: Переопределяем метод для добавления в serializer поля user (create).
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
-    # Переопределяем метод для добавления в serializer поля user (retrieve, update).
+    #: Переопределяем метод для добавления в serializer поля user (retrieve, update).
     def perform_update(self, serializer):
         serializer.save(user=self.request.user)
 
-    # Переопределяем метод для исключения удаления доски из базы.
+    #: Переопределяем метод для исключения удаления доски из базы.
     def perform_destroy(self, instance: Board) -> Board:
         with transaction.atomic():
             instance.is_deleted = True
@@ -54,7 +58,11 @@ class BoardViewSet(viewsets.ModelViewSet):
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
-    queryset = Category.objects.all().select_related('user', 'board')
+    """Представление для обработки запроса на эндпоинт /goals/goal_category{/<id>}
+
+    Действия над категориями.
+    """
+    queryset = Category.objects.all().filter(is_deleted=False)
 
     filter_backends = [filters.OrderingFilter, filters.SearchFilter, DjangoFilterBackend]
     filterset_fields = ['board']
@@ -74,18 +82,17 @@ class CategoryViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         return self._permissions.get(self.action, self._default_permissions)
 
-    # Переопределяем метод для отображения категорий с учетом полей user и is_deleted.
+    #: Переопределяем метод для отображения категорий с учетом полей user и is_deleted.
     def get_queryset(self):
-        return super().get_queryset().filter(
-            board__participants__user_id=self.request.user.id,
-            is_deleted=False
+        return super().get_queryset().select_related('user', 'board').filter(
+            board__participants__user_id=self.request.user.id
         )
 
-    # Переопределяем метод для добавления в serializer поля user.
+    #: Переопределяем метод для добавления в serializer поля user.
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
-    # Переопределяем метод для исключения удаления категории из базы.
+    #: Переопределяем метод для исключения удаления категории из базы.
     def perform_destroy(self, instance: Category) -> Category:
         with transaction.atomic():
             instance.is_deleted = True
@@ -95,6 +102,10 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
 
 class GoalViewSet(viewsets.ModelViewSet):
+    """Представление для обработки запроса на эндпоинт /goals/goal{/<id>}
+
+    Действия над целями.
+    """
     queryset = Goal.objects.all().select_related('user', 'category')
 
     filter_backends = [filters.OrderingFilter, filters.SearchFilter, DjangoFilterBackend]
@@ -115,7 +126,7 @@ class GoalViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         return self._permissions.get(self.action, self._default_permissions)
 
-    # Переопределяем метод для отображения целей с учетом полей user и status.
+    #: Переопределяем метод для отображения целей с учетом полей user и status.
     def get_queryset(self):
         return super().get_queryset().filter(
             category__board__participants__user_id=self.request.user.id,
@@ -123,11 +134,11 @@ class GoalViewSet(viewsets.ModelViewSet):
             status__lt=Goal.Status.archived,
         )
 
-    # Переопределяем метод для добавления в serializer поля user.
+    #: Переопределяем метод для добавления в serializer поля user.
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
-    # Переопределяем метод для исключения удаления целей из базы.
+    #: Переопределяем метод для исключения удаления целей из базы.
     def perform_destroy(self, instance: Goal) -> Goal:
         with transaction.atomic():
             instance.status = Goal.Status.archived
@@ -136,6 +147,10 @@ class GoalViewSet(viewsets.ModelViewSet):
 
 
 class CommentViewSet(viewsets.ModelViewSet):
+    """Представление для обработки запроса на эндпоинт /goals/goal_comment{/<id>}
+
+    Действия над комментариями.
+    """
     queryset = Comment.objects.all().select_related('goal')
 
     filter_backends = [filters.OrderingFilter, DjangoFilterBackend]
@@ -155,13 +170,13 @@ class CommentViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         return self._permissions.get(self.action, self._default_permissions)
 
-    # Переопределяем метод для отображения комментариев с учетом полей author и goal.
+    #: Переопределяем метод для отображения комментариев с учетом полей user и status.
     def get_queryset(self):
         return super().get_queryset().filter(
             goal__category__board__participants__user_id=self.request.user.id,
             goal__status__lt=Goal.Status.archived,
         )
 
-    # Переопределяем метод для добавления в serializer поля user.
+    #: Переопределяем метод для добавления в serializer поля user.
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)

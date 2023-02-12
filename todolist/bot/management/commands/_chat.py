@@ -5,23 +5,32 @@ from bot.tg.dc import Message
 
 
 class Chat:
+    """Основной класс Telegram чата
+
+    Args:
+    message (Message): объект класса Message.
+        Предоставляет доступ к атрибутам полученного сообщения.
+    """
 
     def __init__(self, message: Message):
         self.__message = message
-        self.__state: BaseStateClass | None = None
+        self.__state: BaseStateClass | None = None  #: Атрибут для хранения текущего состояния чата
 
     @property
     def state(self):
+        """Позволяет получить текущее состояние чата"""
         if self.__state:
             return self.__state
         raise RuntimeError('state does not set')
 
     def set_state(self, tg_client: TgClient):
-        """
-        Устанавливает текущее состояние чата:
-            NewState - пользователь не известен;
-            NotVerifiedState - пользователь не верифицирован;
-            VerifiedState - пользователь прошел верификацию
+        """Устанавливает текущее состояние чата:
+
+        Args:
+            tg_client: Telegram клиент. Предоставляет доступ к функциям получения входящих обновлений
+                и отправки сообщений.
+        Returns:
+            None
         """
         tg_user, created = TgUser.objects.get_or_create(
             tg_id=self.__message.message_from.id,

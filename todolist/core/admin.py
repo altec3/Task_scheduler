@@ -7,6 +7,9 @@ from core.models import User
 
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
+    """Регистрация модели User для отображения в панели администратора"""
+
+    #: Наборы полей в карточке пользователя
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
         (None, {'fields': ('first_name', 'last_name', 'email')}),
@@ -14,10 +17,10 @@ class CustomUserAdmin(UserAdmin):
         (None, {'fields': ('last_login', 'date_joined')}),
     )
 
-    # list page
+    #: Настройка отображения списка пользователей
     list_display = ('username', 'email', 'first_name', 'last_name')
     list_filter = ('is_staff', 'is_active', 'is_superuser')
-    # user page
+    #: Установка полей 'только для чтения' в карточке пользователя
     readonly_fields = ('last_login', 'date_joined')
 
     def get_form(self, request, obj=None, **kwargs):

@@ -23,7 +23,13 @@ ansible-vault-win = "^1.0.0"
 django-debug-toolbar = "^3.8.1"
 
 
-[tool.poetry.group.deploy.dependencies]
+[tool.poetry.group.test.dependencies]
+pytest = "^7.2.1"
+pytest-factoryboy = "^2.5.1"
+pytest-django = "^4.5.2"
+
+
+[tool.poetry.group.dep.dependencies]
 gunicorn = "^20.1.0"
 
 [build-system]
