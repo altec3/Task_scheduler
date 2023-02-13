@@ -100,7 +100,7 @@ jobs:
     steps:
       -
         name: clone code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       -
         name: decrypt .env
         uses: anthonykgross/ansible-vault-cli-github-action@v1
