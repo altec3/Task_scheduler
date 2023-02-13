@@ -2,9 +2,7 @@ import random
 import string
 
 import pytest
-from django.contrib.auth.password_validation import (
-    CommonPasswordValidator, MinimumLengthValidator, NumericPasswordValidator
-)
+from django.contrib.auth.password_validation import CommonPasswordValidator, MinimumLengthValidator
 
 
 @pytest.fixture(params=['min length validation', 'common password validation', 'numeric password validation'])

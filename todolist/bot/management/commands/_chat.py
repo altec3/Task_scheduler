@@ -1,4 +1,6 @@
-from bot.management.commands._states import BaseStateClass, NewState, NotVerifiedState, VerifiedState
+from bot.management.commands._states import (
+    BaseStateClass, NewState, NotVerifiedState, VerifiedState
+)
 from bot.models import TgUser
 from bot.tg.client import TgClient
 from bot.tg.dc import Message
@@ -14,7 +16,8 @@ class Chat:
 
     def __init__(self, message: Message):
         self.__message = message
-        self.__state: BaseStateClass | None = None  #: Атрибут для хранения текущего состояния чата
+        #: Атрибут для хранения текущего состояния чата
+        self.__state: BaseStateClass | None = None
 
     @property
     def state(self):
@@ -27,8 +30,8 @@ class Chat:
         """Устанавливает текущее состояние чата:
 
         Args:
-            tg_client: Telegram клиент. Предоставляет доступ к функциям получения входящих обновлений
-                и отправки сообщений.
+            tg_client: Telegram клиент. Предоставляет доступ
+                к функциям получения входящих обновлений и отправки сообщений.
         Returns:
             None
         """
@@ -41,6 +44,13 @@ class Chat:
             self.__state = NewState(tg_user=tg_user, tg_client=tg_client)
         else:
             if not tg_user.user_id:
-                self.__state = NotVerifiedState(tg_user=tg_user, tg_client=tg_client)
+                self.__state = NotVerifiedState(
+                    tg_user=tg_user,
+                    tg_client=tg_client
+                )
             else:
-                self.__state = VerifiedState(tg_user=tg_user, tg_client=tg_client, chat_msg=self.__message.text)
+                self.__state = VerifiedState(
+                    tg_user=tg_user,
+                    tg_client=tg_client,
+                    chat_msg=self.__message.text
+                )

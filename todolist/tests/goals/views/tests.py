@@ -38,7 +38,6 @@ def test_pagination(factory: DjangoModelFactory, url: str, auth_client, user):
         goal = goal_factory.create(category=category)
         factory.create_batch(size=10, goal=goal, user=user)
 
-
     limit_response = auth_client.get(url, {'limit': 3})
     assert limit_response.status_code == status.HTTP_200_OK
     assert limit_response.json()['count'] == 10
