@@ -1,4 +1,6 @@
-# Дипломная работа ![GitHub Workflow Status (with branch)](https://img.shields.io/github/actions/workflow/status/altec3/Thesis_project/action.yaml?branch=main)
+# Дипломная работа
+[![Build Status](https://scrutinizer-ci.com/g/altec3/Thesis_project/badges/build.png?b=main)](https://scrutinizer-ci.com/g/altec3/Thesis_project/build-status/main)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/altec3/Thesis_project/badges/quality-score.png?b=main)](https://scrutinizer-ci.com/g/altec3/Thesis_project/?branch=main)
 ### Итоговая работа по курсу Python-разработчик. 
 *Стек: python:3.10, Django:4.1.4, Postgres:12.4*
 ####
