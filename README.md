@@ -1,7 +1,6 @@
-# Дипломная работа
-### Итоговая работа по курсу Python-разработчик.
-
-_Стек: python:3.10, Django:4.1.4, Postgres:12.4_
+# Дипломная работа ![GitHub Workflow Status (with branch)](https://img.shields.io/github/actions/workflow/status/altec3/Thesis_project/action.yaml?branch=main)
+### Итоговая работа по курсу Python-разработчик. 
+*Стек: python:3.10, Django:4.1.4, Postgres:12.4*
 ####
 ### Описание работы
 
