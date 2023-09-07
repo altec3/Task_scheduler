@@ -57,7 +57,7 @@ services:
       - "80:80"
       - "443:443"
     environment:
-      - SERVER_NAME=lesnikov-a.ga
+      - SERVER_NAME=lealvi.ru
       - CERTBOT_EMAIL=admin@mail.ru
     depends_on:
       api:
