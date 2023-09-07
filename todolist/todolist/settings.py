@@ -12,18 +12,18 @@ if ENV_PATH.exists() and ENV_PATH.is_file():
 
 DEBUG = env.bool('DJANGO_DEBUG', default=True)
 
-ALLOWED_HOSTS = [] if DEBUG else ['lesnikov-a.ga', '127.0.0.1']
+ALLOWED_HOSTS = [] if DEBUG else ['lealvi.ru', '127.0.0.1']
 
 # CSRF
 CSRF_TRUSTED_ORIGINS = [
-    'https://lesnikov-a.ga',
+    'https://lealvi.ru',
 ]
 CSRF_COOKIE_SECURE = True
 SECRET_KEY = env.str('DJANGO_SK', default='django-insecure-=d8jd(tfuzv35t*exjkikyt7*5z^%=hr53443mj3(da&q!yibo')
 
 # CORS
 CORS_ALLOWED_ORIGINS = [
-    'https://lesnikov-a.ga',
+    'https://lealvi.ru',
     'http://localhost',
 ]
 
